@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from "react";
 import { Dimensions, StyleSheet, Text, TextInput, View } from "react-native";
 const INPUT_CHANGE = "INPUT_CHANGE";
 const INPUT_BLUR = "INPUT_BLUR";
-
+const INPUT_SUBMITTED = "INPUT_SUBMITTED";
 const inputReducer = (state, action) => {
   switch (action.type) {
     case INPUT_CHANGE:
@@ -15,6 +15,11 @@ const inputReducer = (state, action) => {
       return {
         ...state,
         touched: true,
+      };
+    case INPUT_SUBMITTED:
+      return {
+        ...state,
+        value: "",
       };
     default:
       return state;
@@ -60,7 +65,11 @@ const CustomTextInput = (props) => {
 
   const lostFocusHandler = () => {
     dispatch({ type: INPUT_BLUR });
+    if (props.submitted){
+      dispatch({type: INPUT_SUBMITTED})
+    }
   };
+  
   return (
     <View style={styles.container}>
       <TextInput
@@ -89,8 +98,8 @@ const styles = StyleSheet.create({
     height: Dimensions.get("screen").height * 0.0615,
     borderRadius: 22,
     backgroundColor: "#FFFFFF",
-    paddingVertical: 10,
-    paddingHorizontal: 25,
+    paddingVertical: Dimensions.get("screen").height * 0.012,
+    paddingHorizontal: Dimensions.get("screen").width * 0.063,
     fontFamily: "poppins-regular",
     fontSize: Dimensions.get("screen").height * 0.0156,
     fontWeight: "400",
@@ -99,7 +108,7 @@ const styles = StyleSheet.create({
     color: "#000000B2",
   },
   errorContainer: {
-    marginVertical: Dimensions.get("screen").height * 0.006,
+    marginTop: Dimensions.get("screen").height * 0.006,
   },
   errorText: {
     fontSize: Dimensions.get("screen").height * 0.0156,

@@ -4,14 +4,16 @@ import CustomText from "../components/CustomText";
 import CustomTitle from "../components/CustomTitle";
 import colors from "../constants/colors";
 
+const { height, width } = Dimensions.get("screen");
+
+
 const Bienvenue = (props) => {
   return (
     <View style={styles.container}>
       <Image source={require("../assets/shape.png")} />
-      <Image
-        style={styles.image}
-        source={require("../assets/undraw_mobile_ux_o0e11.png")}
-      />
+      <View style={styles.image}>
+        <Image source={require("../assets/undraw_mobile_ux_o0e11.png")} />
+      </View>
       <CustomTitle style={styles.title} title="Gets things done with TODO" />
       <CustomText
         style={styles.text}
@@ -34,24 +36,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   image: {
-    width: Dimensions.get("screen").width * 0.593,
-    height: Dimensions.get("screen").height * 0.205,
-    marginRight: Dimensions.get("screen").width * 0.254,
-    marginTop: Dimensions.get("screen").height * 0.0711,
-    marginLeft: Dimensions.get("screen").width * 0.259,
+    width: width * 0.593,
+    height: height * 0.205,
+    marginRight: width * 0.254,
+    marginTop: height * 0.0711,
+    marginLeft: width * 0.259,
   },
   title: {
-    marginTop: Dimensions.get("screen").height * 0.0542,
-    marginLeft: Dimensions.get("screen").width * 0.259,
-    marginRight: Dimensions.get("screen").width * 0.255,
+    marginTop: height * 0.0542,
+    marginLeft: width * 0.259,
+    marginRight: width * 0.255,
   },
   text: {
-    marginTop: Dimensions.get("screen").height * 0.043,
-    marginLeft: Dimensions.get("screen").width * 0.122,
-    marginRight: Dimensions.get("screen").width * 0.117,
+    marginTop: height * 0.043,
+    marginLeft: width * 0.122,
+    marginRight: width * 0.117,
   },
   button: {
-    marginTop: Dimensions.get("screen").height * 0.11,
+    marginTop: height * 0.11,
   },
 });
 export default Bienvenue;

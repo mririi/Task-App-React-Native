@@ -2,7 +2,6 @@ import Task from "../../models/Task";
 import {
   DELETE_TASK,
   CREATE_TASK,
-  UPDATE_VIEW,
   SET_TASKS,
 } from "../actions/tasks";
 

@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -21,6 +22,9 @@ import * as authActions from "../store/actions/auth";
 import CustomText from "../components/CustomText";
 import CustomTitle from "../components/CustomTitle";
 import CustomLink from "../components/CustomLink";
+
+const { height, width } = Dimensions.get("screen");
+
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
 const formReducer = (state, action) => {
@@ -119,6 +123,7 @@ const Inscription = (props) => {
             placeholder="Enter your full name"
             errorText="Full name is required"
             onInputChange={inputChangeHandler}
+            returnKeyType="next"
           />
           <CustomTextInput
             id="email"
@@ -129,6 +134,7 @@ const Inscription = (props) => {
             placeholder="Enter your email"
             errorText="Please enter a valid email"
             onInputChange={inputChangeHandler}
+            returnKeyType="next"
           />
           <CustomTextInput
             id="password1"
@@ -138,6 +144,7 @@ const Inscription = (props) => {
             placeholder="Enter password"
             errorText="Password is required"
             onInputChange={inputChangeHandler}
+            returnKeyType="next"
           />
           <CustomTextInput
             id="password2"
@@ -157,7 +164,12 @@ const Inscription = (props) => {
               onPress={SignUpHandler}
             />
           )}
-          <CustomLink style={styles.signIn} text="Already have an account ? " link="Sign In" onPress={() => props.navigation.navigate("Authentification")} />
+          <CustomLink
+            style={styles.signIn}
+            text="Already have an account ? "
+            link="Sign In"
+            onPress={() => props.navigation.navigate("Authentification")}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -169,26 +181,25 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   title: {
-    marginTop: Dimensions.get("screen").height * 0.091,
+    marginTop: height * 0.091,
   },
   text: {
-    marginTop: Dimensions.get("screen").height * 0.016,
+    marginTop: height * 0.016,
   },
   formContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
   nameInput: {
-    marginTop: Dimensions.get("screen").height * 0.059, //height
+    marginTop: height * 0.059,
   },
   button: {
-    marginTop: Dimensions.get("screen").height * 0.06, //height
-    marginRight: Dimensions.get("screen").width * 0.061, //
-    marginLeft: Dimensions.get("screen").width * 0.066, //
+    marginTop: height * 0.06,
+    marginRight: width * 0.061,
+    marginLeft: width * 0.066,
   },
   signIn: {
-    marginTop: Dimensions.get("screen").height * 0.027,
-
+    marginTop: height * 0.0277,
   },
 });
 export default Inscription;

@@ -1,13 +1,17 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useReducer, useState } from "react";
-import { Dimensions, Keyboard, Modal, Pressable } from "react-native";
+import {
+  Dimensions,
+  Keyboard,
+  Modal,
+  Pressable,
+  StatusBar,
+} from "react-native";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
   Image,
   KeyboardAvoidingView,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -20,6 +24,10 @@ import TaskItem from "../components/TaskItem";
 import colors from "../constants/colors";
 import * as authActions from "../store/actions/auth";
 import * as taskActions from "../store/actions/tasks";
+
+const { height, width } = Dimensions.get("screen");
+const windowHeight = Dimensions.get("window").height;
+const navbarHeight = height - windowHeight + StatusBar.currentHeight;
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
@@ -50,6 +58,7 @@ const Tasks = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [idToDelete, setIdToDelete] = useState();
   const userid = useSelector((state) => state.auth.userId);
   const fullname = useSelector((state) => state.auth.fullname);
@@ -57,26 +66,20 @@ const Tasks = (props) => {
     state.tasks.availableTasks.filter((task) => task.userid === userid)
   );
   const dispatch = useDispatch();
-
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValues: {
+      title: "",
+    },
+    inputValidities: {
+      title: false,
+    },
+    formIsValid: false,
+  });
   useEffect(() => {
     if (error) {
       Alert.alert("An error occurred!", error, [{ text: "Ok" }]);
     }
   }, [error]);
-  /*const retrieveData = async () => {
-    try {
-      const value = await AsyncStorage.getItem("userData");
-      if (value !== null) {
-        // We have data!!
-        const data = JSON.parse(value);
-        setFullname(data.fullname);
-      }
-    } catch (error) {
-      // Error retrieving data
-    }
-  };*/
-  //retrieveData();
-  //const fullname = useSelector((state) => state.auth.userId);
 
   const loadTasks = useCallback(async () => {
     try {
@@ -88,50 +91,30 @@ const Tasks = (props) => {
     }
     setIsRefreshing(false);
   }, [dispatch, setIsRefreshing, setError]);
-  // init
+
   useEffect(() => {
     setIsLoading(true);
     loadTasks().then(() => setIsLoading(false));
   }, [dispatch, loadTasks]);
 
-  /*const restvalues = () => {
-    useReducer(formReducer, {
-      inputValues: {
-        title: "",
-      },
-      inputValidities: {
-        title: false,
-      },
-      formIsValid: false,
-    });
-  };*/
-  const [formState, dispatchFormState] = useReducer(formReducer, {
-    inputValues: {
-      title: "",
-    },
-    inputValidities: {
-      title: false,
-    },
-    formIsValid: false,
-  });
-
-  const submitHandler = async () => {
+  const submitHandler = useCallback(async () => {
     Keyboard.dismiss();
+    setSubmitted(true);
+    const action = taskActions.createTask(formState.inputValues.title);
+    setError(null);
     if (!formState.inputValues.title) {
       Alert.alert("Form Invald!", "Task field can't be empty");
       return;
     }
-    const action = taskActions.createTask(formState.inputValues.title);
-    setError(null);
     setIsLoading(true);
     try {
-      dispatch(action);
+      await dispatch(action);
       setIsLoading(false);
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
     }
-  };
+  }, [dispatch, formState]);
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {
       dispatchFormState({
@@ -162,7 +145,10 @@ const Tasks = (props) => {
           style={styles.input}
           errorText="Task is required"
           onInputChange={inputChangeHandler}
+          submitted={submitted}
           placeholder="Enter your task"
+          onSubmitEditing={submitHandler}
+          initialValue=""
         />
         {isLoading ? (
           <ActivityIndicator size="small" color={colors.primary} />
@@ -253,24 +239,24 @@ const styles = StyleSheet.create({
   },
   blueblock: {
     backgroundColor: colors.button,
-    height: Dimensions.get("screen").height * 0.37,
+    height: height * 0.37,
   },
 
   profile: {
-    width: Dimensions.get("screen").width * 0.254,
-    height: Dimensions.get("screen").height * 0.12,
-    marginTop: -(Dimensions.get("screen").height * 0.0482),
-    marginLeft: Dimensions.get("screen").width * 0.359,
+    width: width * 0.254,
+    height: height * 0.12,
+    marginTop: -(height * 0.0482),
+    marginLeft: width * 0.359,
     borderWidth: 3,
-    borderRadius: Dimensions.get("screen").height * 0.12,
+    borderRadius: height * 0.12,
     borderColor: "#2B8E94",
   },
   welcome: {
-    marginTop: Dimensions.get("screen").height * 0.024,
+    marginTop: height * 0.024,
     color: "#FFFFFF",
   },
   taskarea: {
-    height: Dimensions.get("screen").height * 0.63,
+    height: height * 0.63,
   },
   taskform: {
     alignItems: "center",
@@ -279,26 +265,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    marginTop: Dimensions.get("screen").height * 0.018,
-    height: Dimensions.get("screen").height * 0.054,
-    width: Dimensions.get("screen").width * 0.753,
+    marginTop: height * 0.018,
+    height: height * 0.054,
+    width: width * 0.753,
   },
   title1: {
-    marginTop: Dimensions.get("screen").height * 0.018,
+    marginTop: height * 0.018,
+    marginLeft: width * 0.071,
+    textAlign: "left",
   },
   card: {
     backgroundColor: "#FFFFFF",
-    width: Dimensions.get("screen").width * 0.822,
-    height: Dimensions.get("screen").height * 0.3,
+    width: width * 0.822,
+    height: height * 0.3,
     borderRadius: 24,
-    marginTop: Dimensions.get("screen").height * 0.0241,
-    marginLeft: Dimensions.get("screen").width * 0.0814,
-    elevation: Dimensions.get("screen").height * 0.018,
+    marginTop: height * 0.0241,
+    marginLeft: width * 0.0814,
+    elevation: height * 0.018,
     shadowColor: "#00000040",
     shadowOpacity: 0.26,
     shadowOffset: {
       width: 0,
-      height: Dimensions.get("screen").height * 0.00482,
+      height: height * 0.00482,
     },
     shadowRadius: 10,
     overflow: "hidden",
@@ -310,42 +298,44 @@ const styles = StyleSheet.create({
   },
 
   flatlist: {
-    marginRight: Dimensions.get("screen").width * 0.086,
-    marginBottom: Dimensions.get("screen").height * 0.024,
+    marginRight: width * 0.086,
+    marginBottom: height * 0.024,
   },
   title2: {
-    marginTop: Dimensions.get("screen").height * 0.031,
-    marginLeft: Dimensions.get("screen").width * 0.0534,
+    marginTop: height * 0.031,
+    marginLeft: width * 0.0534,
+    textAlign: "left",
   },
   logout: {
     color: "#D24141",
+    minWidth: 71,
     fontWeight: "400",
-    lineHeight: Dimensions.get("screen").height * 0.0195,
+    lineHeight: height * 0.0195,
     textAlign: "center",
-    fontSize: Dimensions.get("screen").height * 0.0156,
-    marginTop: Dimensions.get("screen").height * 0.0277,
+    fontSize: height * 0.0156,
+    marginTop: navbarHeight > 150 ? (height * 0.0277) / 2 : height * 0.0277,
     fontFamily: "poppins-regular",
     letterSpacing: 1,
-    width: Dimensions.get("screen").width * 0.162,
+    width: width * 0.162,
   },
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: Dimensions.get("screen").height * 0.026,
+    marginTop: height * 0.026,
   },
   modalView: {
-    marginVertical: Dimensions.get("screen").height * 0.024,
-    marginHorizontal: Dimensions.get("screen").width * 0.051,
+    marginVertical: height * 0.024,
+    marginHorizontal: width * 0.051,
     backgroundColor: "#BAEEF3",
     borderRadius: 20,
     alignItems: "center",
     shadowColor: "#000",
-    height: Dimensions.get("screen").height * 0.126,
-    width: Dimensions.get("screen").width * 0.611,
+    height: height * 0.126,
+    width: width * 0.611,
     shadowOffset: {
       width: 0,
-      height: Dimensions.get("screen").height * 0.005,
+      height: height * 0.005,
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -354,23 +344,23 @@ const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: "space-around",
     flexDirection: "row",
-    top: Dimensions.get("screen").height * 0.012,
+    top: height * 0.012,
   },
   buttonYes: {
     borderRadius: 10,
     backgroundColor: "#35A7B2",
-    height: Dimensions.get("screen").height * 0.0422,
-    width: Dimensions.get("screen").width * 0.229,
+    height: height * 0.0422,
+    width: width * 0.229,
     elevation: 2,
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: Dimensions.get("screen").width * 0.0254,
+    marginLeft: width * 0.0254,
   },
   buttonNotYet: {
     borderRadius: 10,
     backgroundColor: "#D24141",
-    height: Dimensions.get("screen").height * 0.0422,
-    width: Dimensions.get("screen").width * 0.229,
+    height: height * 0.0422,
+    width: width * 0.229,
     elevation: 2,
     alignItems: "center",
     justifyContent: "center",
@@ -381,15 +371,15 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "#ffffff",
     textAlign: "center",
-    fontSize: Dimensions.get("screen").height * 0.018,
+    fontSize: height * 0.018,
   },
   modalText: {
-    marginBottom: Dimensions.get("screen").height * 0.018,
+    marginBottom: height * 0.018,
     fontFamily: "poppins-regular",
     fontWeight: "400",
     textAlign: "center",
-    top: Dimensions.get("screen").width * 0.018,
-    fontSize: Dimensions.get("screen").width * 0.0217,
+    top: width * 0.018,
+    fontSize: height * 0.0217,
   },
 });
 export default Tasks;

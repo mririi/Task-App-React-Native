@@ -7,9 +7,8 @@ export const DELETE_TASK = "DELETE_TASK";
 
 export const fetchTasks = () => {
   return async (dispatch) => {
-    // any async code wanted
     try {
-      const response = await fetch(Env.url + "/tasks"); // add your own API url
+      const response = await fetch(Env.url + "/tasks"); 
       if (!response.ok) {
         throw new Error("Something went wrong!");
       }
@@ -29,11 +28,10 @@ export const fetchTasks = () => {
 };
 export const createTask = (title) => {
   return async (dispatch, getState) => {
-    // any async code wanted
     const token = getState().auth.token;
     const userId = getState().auth.userId;
     const response = await fetch(
-      `${Env.url}/tasks`, // add your own API url
+      `${Env.url}/tasks`, 
       {
         method: "POST",
         headers: {
@@ -63,7 +61,7 @@ export const deleteTask = (taskId) => {
     const token = getState().auth.token;
     console.log(taskId);
     const response = await fetch(
-      `${Env.url}/tasks/${taskId}`, // add your own API url
+      `${Env.url}/tasks/${taskId}`, 
       {
         method: "DELETE",
         headers: {

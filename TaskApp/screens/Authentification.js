@@ -6,6 +6,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -18,6 +19,11 @@ import * as authActions from "../store/actions/auth";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import CustomTitle from "../components/CustomTitle";
 import CustomLink from "../components/CustomLink";
+
+const { height, width } = Dimensions.get("screen");
+const windowHeight = Dimensions.get("window").height;
+const navbarHeight = height - windowHeight + StatusBar.currentHeight;
+
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
 const formReducer = (state, action) => {
@@ -46,7 +52,7 @@ const formReducer = (state, action) => {
 const Authentification = (props) => {
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
-
+  const [submitted, setSubmitted] = useState(false);
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
@@ -67,10 +73,13 @@ const Authentification = (props) => {
 
   const LoginHandler = async () => {
     Keyboard.dismiss();
+    setSubmitted(true);
+
     action = authActions.login(
       formState.inputValues.email,
       formState.inputValues.password
     );
+
     setError(null);
     setIsLoading(true);
     try {
@@ -101,11 +110,9 @@ const Authentification = (props) => {
       <ScrollView>
         <Image source={require("../assets/shape.png")} />
         <CustomTitle style={styles.title} title="Welcome Back!" />
-        <Image
-          style={styles.image}
-          source={require("../assets/undraw_my_notifications.png")}
-        />
-
+        <View style={styles.image}>
+          <Image source={require("../assets/undraw_my_notifications.png")} />
+        </View>
         <View style={styles.formContainer}>
           <CustomTextInput
             style={styles.email}
@@ -114,6 +121,7 @@ const Authentification = (props) => {
             required
             email
             onInputChange={inputChangeHandler}
+            submitted={submitted}
             errorText="Email is required"
             autoCapitalize="none"
             placeholder="Enter your email"
@@ -123,6 +131,7 @@ const Authentification = (props) => {
             secureTextEntry
             required
             autoCapitalize="none"
+            submitted={submitted}
             placeholder="Enter your password"
             onInputChange={inputChangeHandler}
             errorText="Password is required"
@@ -154,28 +163,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   title: {
-    marginTop: Dimensions.get("screen").height * 0.0422,
+    marginTop: height * 0.0422,
   },
   image: {
-    width: Dimensions.get("screen").width * 0.435,
-    height: Dimensions.get("screen").height * 0.205,
-    left: Dimensions.get("screen").width * 0.259,
-    marginTop: Dimensions.get("screen").height * 0.046,
+    width: width * 0.435,
+    height: height * 0.205,
+    left: width * 0.259,
+    marginTop: height * 0.046,
   },
   formContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
   email: {
-    marginTop: Dimensions.get("screen").height * 0.0554,
+    marginTop: height * 0.0554,
   },
   button: {
-    marginTop: Dimensions.get("screen").height * 0.0603,
-    marginRight: Dimensions.get("screen").width * 0.061,
-    marginLeft: Dimensions.get("screen").width * 0.061,
+    marginTop: height * 0.0603,
+    marginRight: width * 0.061,
+    marginLeft: width * 0.061,
   },
   signIn: {
-    marginTop: Dimensions.get("screen").height * 0.0349,
+    marginTop: height * 0.0349,
   },
 });
 export default Authentification;

@@ -15,8 +15,6 @@ const CustomLink = (props) => {
 const styles = StyleSheet.create({
   text: {
     fontFamily: "poppins-regular",
-    marginLeft: Dimensions.get("screen").height * 0.142, //
-    marginRight: Dimensions.get("screen").width * 0.132, //
     fontWeight: "700",
     fontSize: Dimensions.get("screen").height * 0.0168,
     lineHeight: Dimensions.get("screen").height * 0.019,

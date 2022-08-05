@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import * as ExpoSplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
