@@ -1,9 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Env from "../../constants/Env";
 
+//Declaring action types
 export const AUTHENTICATE = "AUTHENTICATE";
 export const LOGOUT = "LOGOUT";
 
+//Declaring the authenticate action
 export const authenticate = (userId, token, fullname) => {
   return (dispatch) => {
     dispatch({
@@ -15,8 +17,10 @@ export const authenticate = (userId, token, fullname) => {
   };
 };
 
+//Declaring the signup action
 export const signup = (fullname, email, password1, password2) => {
   return async (dispatch) => {
+    //Adding a user to the database
     const response = await fetch(Env.url + "/register/", {
       method: "POST",
       headers: {
@@ -30,6 +34,7 @@ export const signup = (fullname, email, password1, password2) => {
         password_confirmation: password2,
       }),
     });
+    //Handling errors
     if (!response.ok) {
       const errorResData = await response.json();
       const errorId = errorResData;
@@ -48,15 +53,15 @@ export const signup = (fullname, email, password1, password2) => {
         parseInt(resData.expiresIn) * 1000
       )
     );
-    const expirationDate = new Date(
-      new Date().getTime() + parseInt(resData.expiresIn) * 1000
-    );
+    //Saving Data to the storage
     saveDataToStorage(resData.token, resData.user.id, resData.user.fullname);
   };
 };
 
+//Declaring the login action
 export const login = (email, password) => {
   return async (dispatch) => {
+    //Signing in the user
     const response = await fetch(Env.url + "/login/", {
       method: "POST",
       headers: {
@@ -69,6 +74,7 @@ export const login = (email, password) => {
         returnSecureToken: true,
       }),
     });
+    //Handling errors
     if (!response.ok) {
       const errorResData = await response.json();
       const errorId = errorResData;
@@ -84,15 +90,19 @@ export const login = (email, password) => {
     dispatch(
       authenticate(resData.user.id, resData.token, resData.user.fullname)
     );
+    //Saving Data to the storage
     saveDataToStorage(resData.token, resData.user.id, resData.user.fullname);
   };
 };
 
+//Declaring the logout action
 export const logout = () => {
+  //Removing userdata from the storage
   AsyncStorage.removeItem("userData");
   return { type: LOGOUT };
 };
 
+//Declaring the function for saving data to the storage
 const saveDataToStorage = (token, userId, fullname) => {
   AsyncStorage.setItem(
     "userData",

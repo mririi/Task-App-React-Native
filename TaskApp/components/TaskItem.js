@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import colors from "../constants/colors";
 
+//Declaring height and width of the device
 const { height, width } = Dimensions.get("screen");
 
 const TaskItem = (props) => {

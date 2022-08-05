@@ -5,10 +5,12 @@ import {
   SET_TASKS,
 } from "../actions/tasks";
 
+//Initialising state
 const initialState = {
   availableTasks: [],
 };
 
+//Handling actions
 export default (state = initialState, action) => {
   switch (action.type) {
     case SET_TASKS:

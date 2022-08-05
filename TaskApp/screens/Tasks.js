@@ -25,12 +25,19 @@ import colors from "../constants/colors";
 import * as authActions from "../store/actions/auth";
 import * as taskActions from "../store/actions/tasks";
 
+//Declaring height and width of the device
 const { height, width } = Dimensions.get("screen");
+
+//Getting the window height of the device
 const windowHeight = Dimensions.get("window").height;
+
+//Calculating the height of navigation bar of the device
 const navbarHeight = height - windowHeight + StatusBar.currentHeight;
 
+//Declaring the action type
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
+//Declaring the form reducer
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
     const updatedValues = {
@@ -53,6 +60,7 @@ const formReducer = (state, action) => {
   }
   return state;
 };
+
 const Tasks = (props) => {
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -60,12 +68,17 @@ const Tasks = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [idToDelete, setIdToDelete] = useState();
+  //Getting the userId from the state
   const userid = useSelector((state) => state.auth.userId);
+  //Getting the fullname from the state
   const fullname = useSelector((state) => state.auth.fullname);
+  //Getting all the tasks in the state
   const tasks = useSelector((state) =>
     state.tasks.availableTasks.filter((task) => task.userid === userid)
   );
   const dispatch = useDispatch();
+
+  //Initializing the form state
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
       title: "",
@@ -81,10 +94,13 @@ const Tasks = (props) => {
     }
   }, [error]);
 
+  //Loading the tasks
   const loadTasks = useCallback(async () => {
     try {
       setError(null);
       setIsRefreshing(true);
+
+      //Dispatching fetchTasks action
       dispatch(taskActions.fetchTasks());
     } catch (err) {
       setError(err.message);
@@ -92,11 +108,13 @@ const Tasks = (props) => {
     setIsRefreshing(false);
   }, [dispatch, setIsRefreshing, setError]);
 
+  //Handling the loading state
   useEffect(() => {
     setIsLoading(true);
     loadTasks().then(() => setIsLoading(false));
   }, [dispatch, loadTasks]);
 
+  //Handling the submit button
   const submitHandler = useCallback(async () => {
     Keyboard.dismiss();
     setSubmitted(true);
@@ -115,6 +133,8 @@ const Tasks = (props) => {
       setIsLoading(false);
     }
   }, [dispatch, formState]);
+
+  //Handling the input data
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {
       dispatchFormState({
@@ -126,6 +146,7 @@ const Tasks = (props) => {
     },
     [dispatchFormState]
   );
+  
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}

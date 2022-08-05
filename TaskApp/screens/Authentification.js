@@ -8,7 +8,6 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import CustomButton from "../components/CustomButton";
@@ -20,12 +19,13 @@ import { useCallback, useEffect, useReducer, useState } from "react";
 import CustomTitle from "../components/CustomTitle";
 import CustomLink from "../components/CustomLink";
 
+//Declaring height and width of the device
 const { height, width } = Dimensions.get("screen");
-const windowHeight = Dimensions.get("window").height;
-const navbarHeight = height - windowHeight + StatusBar.currentHeight;
 
+//Declaring the action type
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
+//Declaring the form reducer
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
     const updatedValues = {
@@ -54,6 +54,8 @@ const Authentification = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const dispatch = useDispatch();
+
+  //Initializing the form state
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
       email: "",
@@ -65,31 +67,30 @@ const Authentification = (props) => {
     },
     formIsValid: false,
   });
-  useEffect(() => {
-    if (error) {
-      Alert.alert("An error occurred!", error, [{ text: "Ok" }]);
-    }
-  }, [error]);
 
+  //Handling the login button
   const LoginHandler = async () => {
     Keyboard.dismiss();
-    setSubmitted(true);
-
+    //Declaring the action
     action = authActions.login(
       formState.inputValues.email,
       formState.inputValues.password
     );
-
     setError(null);
     setIsLoading(true);
     try {
+      //Dispatching the login action
       await dispatch(action);
+      setSubmitted(true);
+      //Navigation to the Tasks Screen
       props.navigation.navigate("Tasks");
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
     }
   };
+
+  //Handling the input Data
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {
       dispatchFormState({
@@ -101,6 +102,14 @@ const Authentification = (props) => {
     },
     [dispatchFormState]
   );
+
+  //Creating an error Alert
+  useEffect(() => {
+    if (error) {
+      Alert.alert("An error occurred!", error, [{ text: "Ok" }]);
+    }
+  }, [error]);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}

@@ -4,7 +4,6 @@ import { StyleSheet } from "react-native";
 import Bienvenue from "./screens/Bienvenue";
 import Inscription from "./screens/Inscription";
 import * as Font from "expo-font";
-import AppLoading from "expo-app-loading";
 import { useCallback, useEffect, useState } from "react";
 import Authentification from "./screens/Authentification";
 import Tasks from "./screens/Tasks";
@@ -15,31 +14,32 @@ import tasksReducer from "./store/reducers/tasks";
 import authReducer from "./store/reducers/auth";
 import StartUpScreen from "./screens/StartUpScreen";
 
+//Declaring the root reducer
 const rootReducer = combineReducers({
   auth: authReducer,
   tasks: tasksReducer,
 });
 
+//Declaring the store
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
+
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
+
+  //Loading fonts
   useEffect(() => {
     async function prepare() {
       try {
-        // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync({
           "poppins-regular": require("./assets/fonts/Poppins-Regular.ttf"),
           "poppins-bold": require("./assets/fonts/Poppins-Bold.ttf"),
         });
-        // Artificially delay for two seconds to simulate a slow loading
-        // experience. Please remove this if you copy and paste the code!
       } catch (e) {
         console.warn(e);
       } finally {
         setAppIsReady(true);
       }
     }
-
     prepare();
   }, []);
   const onLayoutRootView = useCallback(async () => {
@@ -51,6 +51,7 @@ export default function App() {
   if (!appIsReady) {
     return null;
   }
+  //Declaring the stack navigator
   const Stack = createStackNavigator();
   return (
     <Provider store={store}>

@@ -1,9 +1,10 @@
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, StyleSheet, View } from "react-native";
 import CustomButton from "../components/CustomButton";
 import CustomText from "../components/CustomText";
 import CustomTitle from "../components/CustomTitle";
 import colors from "../constants/colors";
 
+//Declaring height and width of the device
 const { height, width } = Dimensions.get("screen");
 
 

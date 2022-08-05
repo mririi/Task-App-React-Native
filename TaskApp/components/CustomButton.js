@@ -2,9 +2,6 @@ import {
   Dimensions,
   Pressable,
   StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
 } from "react-native";
 import colors from "../constants/colors";
 import CustomTitle from "./CustomTitle";

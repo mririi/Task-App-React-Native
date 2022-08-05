@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import * as ExpoSplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
@@ -9,7 +9,7 @@ ExpoSplashScreen.preventAutoHideAsync();
 
 export const SplashScreen = (props) => {
   const [appIsReady, setAppIsReady] = useState(false);
-
+  
   useEffect(() => {
     async function prepare() {
       try {
@@ -25,7 +25,6 @@ export const SplashScreen = (props) => {
         setAppIsReady(true);
       }
     }
-
     prepare();
   }, []);
 

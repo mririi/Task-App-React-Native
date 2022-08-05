@@ -7,13 +7,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { useState, useEffect, useReducer, useCallback } from "react";
-
 import CustomButton from "../components/CustomButton";
 import CustomTextInput from "../components/CustomTextInput";
 import colors from "../constants/colors";
@@ -23,10 +20,13 @@ import CustomText from "../components/CustomText";
 import CustomTitle from "../components/CustomTitle";
 import CustomLink from "../components/CustomLink";
 
+//Declaring height and width of the device
 const { height, width } = Dimensions.get("screen");
 
+//Declaring the action type
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
+//Declaring the form reducer
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
     const updatedValues = {
@@ -53,28 +53,28 @@ const Inscription = (props) => {
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+
+  //Initializing the form state
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
       fullname: "",
       email: "",
       password1: "",
-      password2: "",
+      password2: "", //Password Confirmation
     },
     inputValidities: {
       fullname: false,
       email: false,
       password1: false,
-      password2: false,
+      password2: false, //Password Confirmation
     },
     formIsValid: false,
   });
-  useEffect(() => {
-    if (error) {
-      Alert.alert("An error occurred!", error, [{ text: "Ok" }]);
-    }
-  }, [error]);
+
+  //Handling the SignUp button
   const SignUpHandler = async () => {
     Keyboard.dismiss();
+    //Declaring the action
     action = authActions.signup(
       formState.inputValues.fullname,
       formState.inputValues.email,
@@ -84,13 +84,17 @@ const Inscription = (props) => {
     setError(null);
     setIsLoading(true);
     try {
+      //Dispatching the action
       await dispatch(action);
+      //Navigation to the Authentification screen
       props.navigation.navigate("Authentification");
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
     }
   };
+
+  //Handling the input Data
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {
       dispatchFormState({
@@ -102,6 +106,14 @@ const Inscription = (props) => {
     },
     [dispatchFormState]
   );
+
+  //Creating an error Alert
+  useEffect(() => {
+    if (error) {
+      Alert.alert("An error occurred!", error, [{ text: "Ok" }]);
+    }
+  }, [error]);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}

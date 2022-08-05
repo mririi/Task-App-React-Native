@@ -1,8 +1,16 @@
 import React, { useEffect, useReducer } from "react";
 import { Dimensions, StyleSheet, Text, TextInput, View } from "react-native";
+
+//Declaring height and width of the device
+const { height, width } = Dimensions.get("screen");
+
+//Declaring the action types
 const INPUT_CHANGE = "INPUT_CHANGE";
 const INPUT_BLUR = "INPUT_BLUR";
 const INPUT_SUBMITTED = "INPUT_SUBMITTED";
+//End of declaration
+
+//Declaring the input reducer
 const inputReducer = (state, action) => {
   switch (action.type) {
     case INPUT_CHANGE:
@@ -25,6 +33,7 @@ const inputReducer = (state, action) => {
       return state;
   }
 };
+
 const CustomTextInput = (props) => {
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : "",
@@ -63,13 +72,16 @@ const CustomTextInput = (props) => {
     dispatch({ type: INPUT_CHANGE, value: text, isValid: isValid });
   };
 
+  //Handling the onBlur prop
   const lostFocusHandler = () => {
+    //Setting the input as touched
     dispatch({ type: INPUT_BLUR });
-    if (props.submitted){
-      dispatch({type: INPUT_SUBMITTED})
+    if (props.submitted) {
+      //Clearing input value on submit
+      dispatch({ type: INPUT_SUBMITTED });
     }
   };
-  
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -91,27 +103,27 @@ const CustomTextInput = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get("screen").width * 0.763,
+    width: width * 0.763,
   },
   input: {
-    marginTop: Dimensions.get("screen").height * 0.025,
-    height: Dimensions.get("screen").height * 0.0615,
+    marginTop: height * 0.025,
+    height: height * 0.0615,
     borderRadius: 22,
     backgroundColor: "#FFFFFF",
-    paddingVertical: Dimensions.get("screen").height * 0.012,
-    paddingHorizontal: Dimensions.get("screen").width * 0.063,
+    paddingVertical: height * 0.012,
+    paddingHorizontal: width * 0.063,
     fontFamily: "poppins-regular",
-    fontSize: Dimensions.get("screen").height * 0.0156,
+    fontSize: height * 0.0156,
     fontWeight: "400",
-    lineHeight: Dimensions.get("screen").height * 0.021,
+    lineHeight: height * 0.021,
     letterSpacing: 1,
     color: "#000000B2",
   },
   errorContainer: {
-    marginTop: Dimensions.get("screen").height * 0.006,
+    marginTop: height * 0.006,
   },
   errorText: {
-    fontSize: Dimensions.get("screen").height * 0.0156,
+    fontSize: height * 0.0156,
     color: "#D24141",
   },
 });
