@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Alert,
+  Dimensions,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -15,6 +16,8 @@ import colors from "../constants/colors";
 import { useDispatch } from "react-redux";
 import * as authActions from "../store/actions/auth";
 import { useCallback, useEffect, useReducer, useState } from "react";
+import CustomTitle from "../components/CustomTitle";
+import CustomLink from "../components/CustomLink";
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
 const formReducer = (state, action) => {
@@ -97,11 +100,12 @@ const Authentification = (props) => {
     >
       <ScrollView>
         <Image source={require("../assets/shape.png")} />
-        <Text style={styles.title}>Welcome Back!</Text>
+        <CustomTitle style={styles.title} title="Welcome Back!" />
         <Image
           style={styles.image}
           source={require("../assets/undraw_my_notifications.png")}
         />
+
         <View style={styles.formContainer}>
           <CustomTextInput
             style={styles.email}
@@ -132,15 +136,12 @@ const Authentification = (props) => {
               onPress={LoginHandler}
             />
           )}
-          <Text style={styles.signIn}>
-            Don’t have an account ?{" "}
-            <Text
-              style={styles.link}
-              onPress={() => props.navigation.navigate("Inscription")}
-            >
-              Sign Up
-            </Text>
-          </Text>
+          <CustomLink
+            style={styles.signIn}
+            text="Don't have an account ? "
+            link="Sign Up"
+            onPress={() => props.navigation.navigate("Inscription")}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -153,47 +154,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   title: {
-    marginTop: "4.3%",
-    left: 92,
-    fontSize: 18,
-    fontFamily: "poppins-bold",
-    fontWeight: "600",
-    lineHeight: 20.82,
-    letterSpacing: 1,
-    color: "#000000BF",
+    marginTop: Dimensions.get("screen").height * 0.0422,
   },
   image: {
-    width: 172.56,
-    height: 170,
-    marginRight: 100.44,
-    marginTop: 35,
-    marginLeft: 102,
+    width: Dimensions.get("screen").width * 0.435,
+    height: Dimensions.get("screen").height * 0.205,
+    left: Dimensions.get("screen").width * 0.259,
+    marginTop: Dimensions.get("screen").height * 0.046,
   },
   formContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
   email: {
-    marginTop: "5.6%",
+    marginTop: Dimensions.get("screen").height * 0.0554,
   },
   button: {
-    marginTop: 50,
-    marginRight: 24,
-    marginLeft: 26,
+    marginTop: Dimensions.get("screen").height * 0.0603,
+    marginRight: Dimensions.get("screen").width * 0.061,
+    marginLeft: Dimensions.get("screen").width * 0.061,
   },
   signIn: {
-    fontFamily: "poppins-regular",
-    marginTop: "3.5%",
-    marginLeft: 56,
-    marginRight: 52,
-    fontWeight: "700",
-    fontSize: 14,
-    lineHeight: 16.2,
-  },
-  link: {
-    color: colors.button,
-    fontFamily: "poppins-bold",
-    fontWeight: "400",
+    marginTop: Dimensions.get("screen").height * 0.0349,
   },
 });
 export default Authentification;

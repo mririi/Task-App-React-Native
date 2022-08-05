@@ -1,5 +1,7 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import CustomButton from "../components/CustomButton";
+import CustomText from "../components/CustomText";
+import CustomTitle from "../components/CustomTitle";
 import colors from "../constants/colors";
 
 const Bienvenue = (props) => {
@@ -10,13 +12,15 @@ const Bienvenue = (props) => {
         style={styles.image}
         source={require("../assets/undraw_mobile_ux_o0e11.png")}
       />
-      <Text style={styles.title}>Gets things done with TODO</Text>
-      <Text style={styles.text}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum dictum
-        tempus, interdum at dignissim metus. Ultricies sed nunc.
-      </Text>
+      <CustomTitle style={styles.title} title="Gets things done with TODO" />
+      <CustomText
+        style={styles.text}
+        text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum dictum
+        tempus, interdum at dignissim metus. Ultricies sed nunc."
+      />
       <View style={{ justifyContent: "center", alignItems: "center" }}>
         <CustomButton
+          style={styles.button}
           title="Get Started"
           onPress={() => props.navigation.navigate("Inscription")}
         />
@@ -28,41 +32,26 @@ const Bienvenue = (props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.background,
-    flex: 1,
-  },
-  title: {
-    position: "absolute",
-    top: "53.5%",
-    marginLeft: "15.2%",
-    marginRight: "12.2%",
-    fontSize: 18,
-    fontFamily: "poppins-bold",
-    fontWeight: "600",
-    lineHeight: 20.82,
-    letterSpacing: 1,
-    color: "#000000BF",
-    fontStyle: "normal",
-    textAlign: "center",
-  },
-  text: {
-    position: "absolute",
-    fontFamily: "poppins-regular",
-    top: "60.5%",
-    marginLeft: "12.2%",
-    marginRight: "12.2%",
-    fontWeight: "400",
-    fontSize: 13,
-    lineHeight: 17.83,
-    textAlign: "center",
-    color: "#000000BD",
   },
   image: {
-    position: "absolute",
-    width: "40%",
-    height: "20%",
-    marginRight: "27%",
-    top: "27%",
-    marginLeft: "30%",
+    width: Dimensions.get("screen").width * 0.593,
+    height: Dimensions.get("screen").height * 0.205,
+    marginRight: Dimensions.get("screen").width * 0.254,
+    marginTop: Dimensions.get("screen").height * 0.0711,
+    marginLeft: Dimensions.get("screen").width * 0.259,
+  },
+  title: {
+    marginTop: Dimensions.get("screen").height * 0.0542,
+    marginLeft: Dimensions.get("screen").width * 0.259,
+    marginRight: Dimensions.get("screen").width * 0.255,
+  },
+  text: {
+    marginTop: Dimensions.get("screen").height * 0.043,
+    marginLeft: Dimensions.get("screen").width * 0.122,
+    marginRight: Dimensions.get("screen").width * 0.117,
+  },
+  button: {
+    marginTop: Dimensions.get("screen").height * 0.11,
   },
 });
 export default Bienvenue;

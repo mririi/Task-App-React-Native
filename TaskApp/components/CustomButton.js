@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   Pressable,
   StyleSheet,
   Text,
@@ -6,6 +7,7 @@ import {
   View,
 } from "react-native";
 import colors from "../constants/colors";
+import CustomTitle from "./CustomTitle";
 
 const CustomButton = (props) => {
   return (
@@ -13,7 +15,7 @@ const CustomButton = (props) => {
       style={{ ...styles.button, ...props.style }}
       onPress={props.onPress}
     >
-      <Text style={styles.title}>{props.title}</Text>
+      <CustomTitle style={styles.title} title={props.title} />
     </Pressable>
   );
 };
@@ -23,17 +25,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.button,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: "120%",
-    width: "86.6%",
-    height: 62,
+    width: Dimensions.get("screen").width * 0.827,
+    height: Dimensions.get("screen").height * 0.0747,
   },
   title: {
-    fontSize: 18,
     color: colors.buttontext,
-    letterSpacing: 1,
-    fontWeight: "600",
-    fontFamily: "poppins-bold",
-    textAlign: "center",
   },
 });
 export default CustomButton;

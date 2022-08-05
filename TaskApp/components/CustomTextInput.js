@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Dimensions, StyleSheet, Text, TextInput, View } from "react-native";
 const INPUT_CHANGE = "INPUT_CHANGE";
 const INPUT_BLUR = "INPUT_BLUR";
 
@@ -36,7 +36,6 @@ const CustomTextInput = (props) => {
   }, [inputState, onInputChange, id]);
 
   const textChangeHandler = (text) => {
-    console.log(text);
     const emailRegex =
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     let isValid = true;
@@ -83,26 +82,27 @@ const CustomTextInput = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: "80%",
+    width: Dimensions.get("screen").width * 0.763,
   },
   input: {
-    marginTop: 21,
-    height: 51,
+    marginTop: Dimensions.get("screen").height * 0.025,
+    height: Dimensions.get("screen").height * 0.0615,
     borderRadius: 22,
     backgroundColor: "#FFFFFF",
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 25,
     fontFamily: "poppins-regular",
-    fontSize: 13,
+    fontSize: Dimensions.get("screen").height * 0.0156,
     fontWeight: "400",
-    lineHeight: 17.83,
+    lineHeight: Dimensions.get("screen").height * 0.021,
     letterSpacing: 1,
     color: "#000000B2",
   },
   errorContainer: {
-    marginVertical: 5,
+    marginVertical: Dimensions.get("screen").height * 0.006,
   },
   errorText: {
-    fontSize: 13,
+    fontSize: Dimensions.get("screen").height * 0.0156,
     color: "#D24141",
   },
 });

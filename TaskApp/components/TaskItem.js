@@ -1,6 +1,6 @@
 import Checkbox from "expo-checkbox";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import colors from "../constants/colors";
 
 const TaskItem = (props) => {
@@ -23,23 +23,23 @@ const TaskItem = (props) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    marginTop: 18,
-    marginLeft: 30,
+    marginTop: Dimensions.get("screen").height * 0.0217,
+    marginLeft: Dimensions.get("screen").width * 0.076,
   },
   checkbox: {
     right: 1,
     backgroundColor: "#ffffff",
     borderColor: colors.primary,
 
-    width: 17,
-    height: 17,
+    width: Dimensions.get("screen").width * 0.043,
+    height: Dimensions.get("screen").height * 0.0205,
   },
   title: {
-    marginLeft: 11,
+    marginLeft: Dimensions.get("screen").width * 0.028,
     fontFamily: "poppins-regular",
     fontWeight: "400",
-    fontSize: 12,
-    lineHeight: 13.88,
+    fontSize: Dimensions.get("screen").height * 0.0144,
+    lineHeight: Dimensions.get("screen").height * 0.0166,
     letterSpacing: 1,
     color: "#000000BF",
   },

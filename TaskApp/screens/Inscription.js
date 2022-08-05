@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Alert,
+  Dimensions,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -17,6 +18,9 @@ import CustomTextInput from "../components/CustomTextInput";
 import colors from "../constants/colors";
 import { useDispatch } from "react-redux";
 import * as authActions from "../store/actions/auth";
+import CustomText from "../components/CustomText";
+import CustomTitle from "../components/CustomTitle";
+import CustomLink from "../components/CustomLink";
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
 const formReducer = (state, action) => {
@@ -102,8 +106,11 @@ const Inscription = (props) => {
     >
       <ScrollView>
         <Image source={require("../assets/shape.png")} />
-        <Text style={styles.title}>Welcome Onboard!</Text>
-        <Text style={styles.text}>Let’s help you meet up your tasks</Text>
+        <CustomTitle style={styles.title} title="Welcome Onboard!" />
+        <CustomText
+          style={styles.text}
+          text="Let’s help you meet up your tasks"
+        />
         <View style={styles.formContainer}>
           <CustomTextInput
             style={styles.nameInput}
@@ -150,15 +157,7 @@ const Inscription = (props) => {
               onPress={SignUpHandler}
             />
           )}
-          <Text style={styles.signIn}>
-            Already have an account ?{" "}
-            <Text
-              style={styles.link}
-              onPress={() => props.navigation.navigate("Authentification")}
-            >
-              Sign In
-            </Text>
-          </Text>
+          <CustomLink style={styles.signIn} text="Already have an account ? " link="Sign In" onPress={() => props.navigation.navigate("Authentification")} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -167,56 +166,29 @@ const Inscription = (props) => {
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
     backgroundColor: colors.background,
   },
   title: {
-    position: "absolute",
-    top: "29.1%",
-    left: 92,
-    fontSize: 18,
-    fontFamily: "poppins-bold",
-    fontWeight: "600",
-    letterSpacing: 1,
-    color: "#000000BF",
+    marginTop: Dimensions.get("screen").height * 0.091,
   },
   text: {
-    position: "absolute",
-    top: "33.4%",
-    left: "18.4%",
-    fontFamily: "poppins-regular",
-    fontWeight: "400",
-    lineHeight: 17.83,
-    textAlign: "center",
-    color: "#000000BD",
-    fontSize: 13,
+    marginTop: Dimensions.get("screen").height * 0.016,
   },
   formContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop:81
   },
   nameInput: {
-    marginTop: 49,
+    marginTop: Dimensions.get("screen").height * 0.059, //height
   },
   button: {
-    marginTop: 50,
-    marginRight: 24,
-    marginLeft: 26,
+    marginTop: Dimensions.get("screen").height * 0.06, //height
+    marginRight: Dimensions.get("screen").width * 0.061, //
+    marginLeft: Dimensions.get("screen").width * 0.066, //
   },
   signIn: {
-    fontFamily: "poppins-regular",
-    marginTop: 23,
-    marginLeft: 56,
-    marginRight: 52,
-    fontWeight: "700",
-    fontSize: 14,
-    lineHeight: 16.2,
-  },
-  link: {
-    color: colors.button,
-    fontFamily: "poppins-bold",
-    fontWeight: "400",
+    marginTop: Dimensions.get("screen").height * 0.027,
+
   },
 });
 export default Inscription;

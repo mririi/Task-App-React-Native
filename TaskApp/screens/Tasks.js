@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useReducer, useState } from "react";
-import { Keyboard, Modal, Pressable } from "react-native";
+import { Dimensions, Keyboard, Modal, Pressable } from "react-native";
 import {
   ActivityIndicator,
   Alert,
@@ -15,6 +15,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import CustomButton from "../components/CustomButton";
 import CustomTextInput from "../components/CustomTextInput";
+import CustomTitle from "../components/CustomTitle";
 import TaskItem from "../components/TaskItem";
 import colors from "../constants/colors";
 import * as authActions from "../store/actions/auth";
@@ -152,7 +153,7 @@ const Tasks = (props) => {
       <View style={styles.blueblock}>
         <Image source={require("../assets/shapeTask.png")} />
         <Image style={styles.profile} source={require("../assets/Logo.png")} />
-        <Text style={styles.welcome}>Welcome, {fullname} </Text>
+        <CustomTitle style={styles.welcome} title={"Welcome, " + fullname} />
       </View>
       <View style={styles.taskform}>
         <CustomTextInput
@@ -173,9 +174,9 @@ const Tasks = (props) => {
           />
         )}
       </View>
-      <Text style={styles.title1}>Tasks List</Text>
+      <CustomTitle style={styles.title1} title="Tasks List" />
       <View style={styles.card}>
-        <Text style={styles.title2}>Tasks List</Text>
+        <CustomTitle style={styles.title2} title="Tasks List" />
         <FlatList
           onRefresh={loadTasks}
           refreshing={isRefreshing}
@@ -252,30 +253,24 @@ const styles = StyleSheet.create({
   },
   blueblock: {
     backgroundColor: colors.button,
-    height: "37%",
+    height: Dimensions.get("screen").height * 0.37,
   },
 
   profile: {
-    width: 100,
-    height: 100,
-    marginTop: -40,
-    marginLeft: 141,
+    width: Dimensions.get("screen").width * 0.254,
+    height: Dimensions.get("screen").height * 0.12,
+    marginTop: -(Dimensions.get("screen").height * 0.0482),
+    marginLeft: Dimensions.get("screen").width * 0.359,
     borderWidth: 3,
-    borderRadius: 100,
+    borderRadius: Dimensions.get("screen").height * 0.12,
     borderColor: "#2B8E94",
   },
   welcome: {
-    fontFamily: "poppins-bold",
-    fontSize: 18,
-    fontWeight: "600",
-    lineHeight: 20.82,
-    letterSpacing: 1,
-    marginLeft: 76,
-    marginTop: 20,
+    marginTop: Dimensions.get("screen").height * 0.024,
     color: "#FFFFFF",
   },
   taskarea: {
-    height: "63%",
+    height: Dimensions.get("screen").height * 0.63,
   },
   taskform: {
     alignItems: "center",
@@ -284,31 +279,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    marginTop: 15,
-    height: 45,
-    width: 296,
+    marginTop: Dimensions.get("screen").height * 0.018,
+    height: Dimensions.get("screen").height * 0.054,
+    width: Dimensions.get("screen").width * 0.753,
   },
   title1: {
-    color: "#000000BF",
-    fontFamily: "poppins-bold",
-    fontSize: 18,
-    lineHeight: 20.82,
-    fontWeight: "600",
-    letterSpacing: 1,
-    marginLeft: 28,
-    marginTop: 15,
+    marginTop: Dimensions.get("screen").height * 0.018,
   },
   card: {
     backgroundColor: "#FFFFFF",
-    width: 323,
-    height: "30%",
+    width: Dimensions.get("screen").width * 0.822,
+    height: Dimensions.get("screen").height * 0.3,
     borderRadius: 24,
-    marginTop: 20,
-    marginLeft: 32,
-    elevation: 15,
+    marginTop: Dimensions.get("screen").height * 0.0241,
+    marginLeft: Dimensions.get("screen").width * 0.0814,
+    elevation: Dimensions.get("screen").height * 0.018,
     shadowColor: "#00000040",
     shadowOpacity: 0.26,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {
+      width: 0,
+      height: Dimensions.get("screen").height * 0.00482,
+    },
     shadowRadius: 10,
     overflow: "hidden",
   },
@@ -319,46 +310,42 @@ const styles = StyleSheet.create({
   },
 
   flatlist: {
-    marginRight: 34,
-    marginBottom: 20,
+    marginRight: Dimensions.get("screen").width * 0.086,
+    marginBottom: Dimensions.get("screen").height * 0.024,
   },
   title2: {
-    marginTop: 26,
-    marginLeft: 21,
-    fontFamily: "poppins-regular",
-    fontWeight: "400",
-    fontSize: 14,
-    lineHeight: 16.2,
-    letterSpacing: 1,
+    marginTop: Dimensions.get("screen").height * 0.031,
+    marginLeft: Dimensions.get("screen").width * 0.0534,
   },
   logout: {
     color: "#D24141",
     fontWeight: "400",
-    lineHeight: 16.2,
+    lineHeight: Dimensions.get("screen").height * 0.0195,
     textAlign: "center",
-    fontSize: 14,
-    marginTop: 23,
+    fontSize: Dimensions.get("screen").height * 0.0156,
+    marginTop: Dimensions.get("screen").height * 0.0277,
     fontFamily: "poppins-regular",
     letterSpacing: 1,
-    width: "16.2%",
+    width: Dimensions.get("screen").width * 0.162,
   },
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
+    marginTop: Dimensions.get("screen").height * 0.026,
   },
   modalView: {
-    margin: 20,
+    marginVertical: Dimensions.get("screen").height * 0.024,
+    marginHorizontal: Dimensions.get("screen").width * 0.051,
     backgroundColor: "#BAEEF3",
     borderRadius: 20,
     alignItems: "center",
     shadowColor: "#000",
-    height: 105,
-    width: 240,
+    height: Dimensions.get("screen").height * 0.126,
+    width: Dimensions.get("screen").width * 0.611,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: Dimensions.get("screen").height * 0.005,
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -367,23 +354,23 @@ const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: "space-around",
     flexDirection: "row",
-    top: 10,
+    top: Dimensions.get("screen").height * 0.012,
   },
   buttonYes: {
     borderRadius: 10,
     backgroundColor: "#35A7B2",
-    height: 35,
-    width: 90,
+    height: Dimensions.get("screen").height * 0.0422,
+    width: Dimensions.get("screen").width * 0.229,
     elevation: 2,
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: 10,
+    marginLeft: Dimensions.get("screen").width * 0.0254,
   },
   buttonNotYet: {
     borderRadius: 10,
     backgroundColor: "#D24141",
-    height: 35,
-    width: 90,
+    height: Dimensions.get("screen").height * 0.0422,
+    width: Dimensions.get("screen").width * 0.229,
     elevation: 2,
     alignItems: "center",
     justifyContent: "center",
@@ -394,15 +381,15 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "#ffffff",
     textAlign: "center",
-    fontSize: 15,
+    fontSize: Dimensions.get("screen").height * 0.018,
   },
   modalText: {
-    marginBottom: 15,
+    marginBottom: Dimensions.get("screen").height * 0.018,
     fontFamily: "poppins-regular",
     fontWeight: "400",
     textAlign: "center",
-    top: 15,
-    fontSize: 18,
+    top: Dimensions.get("screen").width * 0.018,
+    fontSize: Dimensions.get("screen").width * 0.0217,
   },
 });
 export default Tasks;
