@@ -7,14 +7,15 @@ import colors from "../constants/colors";
 //Declaring height and width of the device
 const { height, width } = Dimensions.get("screen");
 
-
 const Bienvenue = (props) => {
   return (
     <View style={styles.container}>
       <Image source={require("../assets/shape.png")} />
-      <View style={styles.image}>
-        <Image source={require("../assets/undraw_mobile_ux_o0e11.png")} />
-      </View>
+      <Image
+        resizeMode="contain"
+        style={styles.image}
+        source={require("../assets/undraw_mobile_ux_o0e11.png")}
+      />
       <CustomTitle style={styles.title} title="Gets things done with TODO" />
       <CustomText
         style={styles.text}
@@ -45,8 +46,8 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: height * 0.0542,
-    marginLeft: width * 0.259,
-    marginRight: width * 0.255,
+    marginLeft: width * 0.122,
+    marginRight: width * 0.117,
   },
   text: {
     marginTop: height * 0.043,
