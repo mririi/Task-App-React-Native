@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -8,6 +9,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  TextInput,
   View,
 } from "react-native";
 import { useState, useEffect, useReducer, useCallback } from "react";
@@ -19,67 +21,43 @@ import * as authActions from "../store/actions/auth";
 import CustomText from "../components/CustomText";
 import CustomTitle from "../components/CustomTitle";
 import CustomLink from "../components/CustomLink";
+import { Formik, Field } from "formik";
+import * as yup from "yup";
 
 //Declaring height and width of the device
 const { height, width } = Dimensions.get("screen");
+const signUpValidationSchema = yup.object().shape({
+  fullName: yup
+    .string()
+    .matches(/(\w.+\s).+/, "Enter at least 2 names")
+    .required("Full name is required"),
+  email: yup
+    .string()
+    .email("Please enter valid email")
+    .required("Email is required"),
+  password: yup
+    .string()
+    .required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords do not match")
+    .required("Confirm password is required"),
+});
 
-//Declaring the action type
-const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
-
-//Declaring the form reducer
-const formReducer = (state, action) => {
-  if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = {
-      ...state.inputValues,
-      [action.input]: action.value,
-    };
-    const updatedValidities = {
-      ...state.inputValidities,
-      [action.input]: action.isValid,
-    };
-    let updatedFormIsValid = true;
-    for (const key in updatedValidities) {
-      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
-    }
-    return {
-      formIsValid: updatedFormIsValid,
-      inputValidities: updatedValidities,
-      inputValues: updatedValues,
-    };
-  }
-  return state;
-};
 const Inscription = (props) => {
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  //Initializing the form state
-  const [formState, dispatchFormState] = useReducer(formReducer, {
-    inputValues: {
-      fullname: "",
-      email: "",
-      password1: "",
-      password2: "", //Password Confirmation
-    },
-    inputValidities: {
-      fullname: false,
-      email: false,
-      password1: false,
-      password2: false, //Password Confirmation
-    },
-    formIsValid: false,
-  });
-
   //Handling the SignUp button
-  const SignUpHandler = async () => {
+  const SignUpHandler = async (values) => {
     Keyboard.dismiss();
     //Declaring the action
     action = authActions.signup(
-      formState.inputValues.fullname,
-      formState.inputValues.email,
-      formState.inputValues.password1,
-      formState.inputValues.password2
+      values.fullName,
+      values.email,
+      values.password,
+      values.confirmPassword
     );
     setError(null);
     setIsLoading(true);
@@ -93,19 +71,6 @@ const Inscription = (props) => {
       setIsLoading(false);
     }
   };
-
-  //Handling the input Data
-  const inputChangeHandler = useCallback(
-    (inputIdentifier, inputValue, inputValidity) => {
-      dispatchFormState({
-        type: FORM_INPUT_UPDATE,
-        value: inputValue,
-        isValid: inputValidity,
-        input: inputIdentifier,
-      });
-    },
-    [dispatchFormState]
-  );
 
   //Creating an error Alert
   useEffect(() => {
@@ -128,54 +93,54 @@ const Inscription = (props) => {
           text="Let’s help you meet up your tasks"
         />
         <View style={styles.formContainer}>
-          <CustomTextInput
-            style={styles.nameInput}
-            id="fullname"
-            required
-            placeholder="Enter your full name"
-            errorText="Full name is required"
-            onInputChange={inputChangeHandler}
-            returnKeyType="next"
-          />
-          <CustomTextInput
-            id="email"
-            keyboardType="email-address"
-            required
-            email
-            autoCapitalize="none"
-            placeholder="Enter your email"
-            errorText="Please enter a valid email"
-            onInputChange={inputChangeHandler}
-            returnKeyType="next"
-          />
-          <CustomTextInput
-            id="password1"
-            secureTextEntry
-            required
-            autoCapitalize="none"
-            placeholder="Enter password"
-            errorText="Password is required"
-            onInputChange={inputChangeHandler}
-            returnKeyType="next"
-          />
-          <CustomTextInput
-            id="password2"
-            secureTextEntry
-            required
-            autoCapitalize="none"
-            placeholder="Confirm Password"
-            errorText="Confirm password is required"
-            onInputChange={inputChangeHandler}
-          />
-          {isLoading ? (
-            <ActivityIndicator size="small" color={colors.primary} />
-          ) : (
-            <CustomButton
-              style={styles.button}
-              title="Register"
-              onPress={SignUpHandler}
-            />
-          )}
+        <Formik
+            validationSchema={signUpValidationSchema}
+            initialValues={{
+              fullName: '',
+              email: '',
+              password: '',
+              confirmPassword: '',
+            }}
+            onSubmit={(values) => SignUpHandler(values)}
+          >
+            {({ handleSubmit, isValid }) => (
+              <>
+               <Field
+                  component={CustomTextInput}
+                  name="fullName"
+                  placeholder="Full Name"
+                />
+                <Field
+                  component={CustomTextInput}
+                  name="email"
+                  placeholder="Email Address"
+                  keyboardType="email-address"
+                />
+                <Field
+                  component={CustomTextInput}
+                  name="password"
+                  placeholder="Password"
+                  secureTextEntry
+                />
+                <Field
+                  component={CustomTextInput}
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  secureTextEntry
+                />
+                {isLoading ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <CustomButton
+                    style={styles.button}
+                    title="Register"
+                    onPress={handleSubmit}
+                    disabled={!isValid}
+                  />
+                )}
+              </>
+            )}
+          </Formik>
           <CustomLink
             style={styles.signIn}
             text="Already have an account ? "

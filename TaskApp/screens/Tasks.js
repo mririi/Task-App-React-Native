@@ -1,3 +1,4 @@
+import React from "react";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import {
   Dimensions,
@@ -16,6 +17,7 @@ import {
   Text,
   View,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import CustomButton from "../components/CustomButton";
 import CustomTextInput from "../components/CustomTextInput";
@@ -24,6 +26,8 @@ import TaskItem from "../components/TaskItem";
 import colors from "../constants/colors";
 import * as authActions from "../store/actions/auth";
 import * as taskActions from "../store/actions/tasks";
+import { Formik, Field } from "formik";
+import * as yup from "yup";
 
 //Declaring height and width of the device
 const { height, width } = Dimensions.get("screen");
@@ -34,40 +38,21 @@ const windowHeight = Dimensions.get("window").height;
 //Calculating the height of navigation bar of the device
 const navbarHeight = height - windowHeight + StatusBar.currentHeight;
 
-//Declaring the action type
-const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
-
-//Declaring the form reducer
-const formReducer = (state, action) => {
-  if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = {
-      ...state.inputValues,
-      [action.input]: action.value,
-    };
-    const updatedValidities = {
-      ...state.inputValidities,
-      [action.input]: action.isValid,
-    };
-    let updatedFormIsValid = true;
-    for (const key in updatedValidities) {
-      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
-    }
-    return {
-      formIsValid: updatedFormIsValid,
-      inputValidities: updatedValidities,
-      inputValues: updatedValues,
-    };
-  }
-  return state;
-};
+const InputValidationSchema = yup.object().shape({
+  title: yup.string().required("Title is required"),
+});
 
 const Tasks = (props) => {
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [idToDelete, setIdToDelete] = useState();
+  const userData = AsyncStorage.getItem("userData");
+  if (!userData) {
+    props.navigation.navigate("Bienvenue")
+    return;
+  }
   //Getting the userId from the state
   const userid = useSelector((state) => state.auth.userId);
   //Getting the fullname from the state
@@ -78,16 +63,6 @@ const Tasks = (props) => {
   );
   const dispatch = useDispatch();
 
-  //Initializing the form state
-  const [formState, dispatchFormState] = useReducer(formReducer, {
-    inputValues: {
-      title: "",
-    },
-    inputValidities: {
-      title: false,
-    },
-    formIsValid: false,
-  });
   useEffect(() => {
     if (error) {
       Alert.alert("An error occurred!", error, [{ text: "Ok" }]);
@@ -115,38 +90,23 @@ const Tasks = (props) => {
   }, [dispatch, loadTasks]);
 
   //Handling the submit button
-  const submitHandler = useCallback(async () => {
-    Keyboard.dismiss();
-    setSubmitted(true);
-    const action = taskActions.createTask(formState.inputValues.title);
-    setError(null);
-    if (!formState.inputValues.title) {
-      Alert.alert("Form Invald!", "Task field can't be empty");
-      return;
-    }
-    setIsLoading(true);
-    try {
-      await dispatch(action);
-      setIsLoading(false);
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
-    }
-  }, [dispatch, formState]);
-
-  //Handling the input data
-  const inputChangeHandler = useCallback(
-    (inputIdentifier, inputValue, inputValidity) => {
-      dispatchFormState({
-        type: FORM_INPUT_UPDATE,
-        value: inputValue,
-        isValid: inputValidity,
-        input: inputIdentifier,
-      });
+  const submitHandler = useCallback(
+    async (values) => {
+      Keyboard.dismiss();
+      const action = taskActions.createTask(values.title);
+      setError(null);
+      setIsLoading(true);
+      try {
+        await dispatch(action);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setIsLoading(false);
+      }
     },
-    [dispatchFormState]
+    [dispatch]
   );
-  
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -160,26 +120,33 @@ const Tasks = (props) => {
         <CustomTitle style={styles.welcome} title={"Welcome, " + fullname} />
       </View>
       <View style={styles.taskform}>
-        <CustomTextInput
-          id="title"
-          required
-          style={styles.input}
-          errorText="Task is required"
-          onInputChange={inputChangeHandler}
-          submitted={submitted}
-          placeholder="Enter your task"
-          onSubmitEditing={submitHandler}
-          initialValue=""
-        />
-        {isLoading ? (
-          <ActivityIndicator size="small" color={colors.primary} />
-        ) : (
-          <CustomButton
-            title="ADD"
-            style={styles.button}
-            onPress={submitHandler}
-          />
-        )}
+        <Formik
+          validationSchema={InputValidationSchema}
+          initialValues={{
+            title: "",
+          }}
+          onSubmit={(values) => submitHandler(values)}
+        >
+          {({ handleSubmit, isValid }) => (
+            <>
+              <Field
+                component={CustomTextInput}
+                name="title"
+                placeholder="Task Title"
+              />
+              {isLoading ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <CustomButton
+                  style={styles.button}
+                  title="ADD"
+                  onPress={handleSubmit}
+                  disabled={!isValid}
+                />
+              )}
+            </>
+          )}
+        </Formik>
       </View>
       <CustomTitle style={styles.title1} title="Tasks List" />
       <View style={styles.card}>

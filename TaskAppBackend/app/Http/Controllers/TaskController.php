@@ -27,6 +27,7 @@ class TaskController extends Controller
     {
         $request->validate([
             'title' => 'required',
+            'userid' => 'required',
         ]);
 
         return Task::create($request->all());
@@ -44,20 +45,6 @@ class TaskController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $task = Task::find($id);
-        $task->update($request->all());
-        return $task;
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -66,16 +53,5 @@ class TaskController extends Controller
     public function destroy($id)
     {
         return Task::destroy($id);
-    }
-
-     /**
-     * Search for a name
-     *
-     * @param  str  $name
-     * @return \Illuminate\Http\Response
-     */
-    public function search($name)
-    {
-        return Task::where('name', 'like', '%'.$name.'%')->get();
     }
 }

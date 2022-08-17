@@ -1,5 +1,6 @@
-import Env from "../../constants/Env";
+import config from "../../config";
 import Task from "../../models/Task";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //Exporting action types
 export const SET_TASKS = "SET_TASKS";
@@ -11,7 +12,7 @@ export const fetchTasks = () => {
   return async (dispatch) => {
     try {
       //Fetching the tasks from the backend
-      const response = await fetch(Env.url + "/tasks"); 
+      const response = await fetch(config.API_URL + "/tasks");
       //Handling errors
       if (!response.ok) {
         throw new Error("Something went wrong!");
@@ -20,7 +21,9 @@ export const fetchTasks = () => {
       const resData = await response.json();
       const loadedTasks = [];
       for (const key in resData) {
-        loadedTasks.push(new Task(resData[key].id, resData[key].title,resData[key].userid));
+        loadedTasks.push(
+          new Task(resData[key].id, resData[key].title, resData[key].userid)
+        );
       }
       //Dispatching SET_TASKS action
       dispatch({
@@ -37,24 +40,23 @@ export const fetchTasks = () => {
 export const createTask = (title) => {
   return async (dispatch, getState) => {
     //Getting data saved in the state
-    const token = getState().auth.token;
+    const userData = await AsyncStorage.getItem("userData");
+    const transformedData = JSON.parse(userData);
+    const { token } = transformedData;
     const userId = getState().auth.userId;
     //Creating task
-    const response = await fetch(
-      `${Env.url}/tasks`, 
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({
-          title: title,
-          userid: userId,
-        }),
-      }
-    );
+    const response = await fetch(`${config.API_URL}/tasks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        title: title,
+        userid: userId,
+      }),
+    });
     //Dispatching CREATE_TASK action
     const resData = await response.json();
     dispatch({
@@ -72,19 +74,18 @@ export const createTask = (title) => {
 export const deleteTask = (taskId) => {
   return async (dispatch, getState) => {
     //Getting token from the state
-    const token = getState().auth.token;
+    const userData = await AsyncStorage.getItem("userData");
+    const transformedData = JSON.parse(userData);
+    const { token } = transformedData;
     //Deleting task
-    const response = await fetch(
-      `${Env.url}/tasks/${taskId}`, 
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: "Bearer " + token,
-        },
-      }
-    );
+    const response = await fetch(`${config.API_URL}/tasks/${taskId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
     //Handling errors
     if (!response.ok) {
       throw new Error("Something went wrong!");

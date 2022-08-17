@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/tasks', [TaskController::class, 'index']);
+Route::get('/users/{token}', [AuthController::class, 'getUserByToken']);
 Route::get('/tasks/{id}', [TaskController::class, 'show']);
 Route::get('/tasks/search/{name}', [TaskController::class, 'search']);
 

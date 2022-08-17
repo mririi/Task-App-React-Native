@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -57,7 +58,13 @@ class AuthController extends Controller
 
         return response($response, 201);
     }
-
+    public function getUserByToken($token)
+    {
+        $token = PersonalAccessToken::findToken($token);
+        $user = $token->tokenable;
+        return $user;
+    }
+    
     public function logout(Request $request) {
         auth()->user()->tokens()->delete();
 

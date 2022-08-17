@@ -1,3 +1,4 @@
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Bienvenue from "./screens/Bienvenue";
@@ -7,24 +8,12 @@ import { useCallback, useEffect, useState } from "react";
 import Authentification from "./screens/Authentification";
 import Tasks from "./screens/Tasks";
 import { Provider } from "react-redux";
-import { combineReducers, createStore, applyMiddleware } from "redux";
-import ReduxThunk from "redux-thunk";
-import tasksReducer from "./store/reducers/tasks";
-import authReducer from "./store/reducers/auth";
-import StartUpScreen from "./screens/StartUpScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-//Declaring the root reducer
-const rootReducer = combineReducers({
-  auth: authReducer,
-  tasks: tasksReducer,
-});
-
-//Declaring the store
-const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
+import configureStore from "./store/configureStore";
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
-
   //Loading fonts
   useEffect(() => {
     async function prepare() {
@@ -50,8 +39,10 @@ export default function App() {
   if (!appIsReady) {
     return null;
   }
+
   //Declaring the stack navigator
   const Stack = createStackNavigator();
+  const store = configureStore();
   return (
     <Provider store={store}>
       <NavigationContainer>
@@ -60,7 +51,6 @@ export default function App() {
             headerShown: false,
           }}
         >
-          <Stack.Screen name="StartUpScreen" component={StartUpScreen} />
           <Stack.Screen name="Bienvenue" component={Bienvenue} />
           <Stack.Screen name="Inscription" component={Inscription} />
           <Stack.Screen name="Authentification" component={Authentification} />
@@ -70,4 +60,3 @@ export default function App() {
     </Provider>
   );
 }
-

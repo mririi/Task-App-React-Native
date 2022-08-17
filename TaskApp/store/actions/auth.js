@@ -1,18 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Env from "../../constants/Env";
-
+import config from "../../config";
 //Declaring action types
 export const AUTHENTICATE = "AUTHENTICATE";
 export const LOGOUT = "LOGOUT";
 
 //Declaring the authenticate action
-export const authenticate = (userId, token, fullname) => {
+export const authenticate = (fullname, userId) => {
   return (dispatch) => {
     dispatch({
       type: AUTHENTICATE,
-      userId: userId,
-      token: token,
       fullname: fullname,
+      userId: userId,
     });
   };
 };
@@ -21,7 +19,7 @@ export const authenticate = (userId, token, fullname) => {
 export const signup = (fullname, email, password1, password2) => {
   return async (dispatch) => {
     //Adding a user to the database
-    const response = await fetch(Env.url + "/register/", {
+    const response = await fetch(config.API_URL + "/register/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -35,7 +33,7 @@ export const signup = (fullname, email, password1, password2) => {
       }),
     });
     //Handling errors
-    if (!response.ok) {
+    /*if (!response.ok) {
       const errorResData = await response.json();
       const errorId = errorResData;
       let message = "Something went wrongg!";
@@ -43,18 +41,7 @@ export const signup = (fullname, email, password1, password2) => {
         message = "This email exists already!";
       }
       throw new Error(message);
-    }
-    const resData = await response.json();
-    dispatch(
-      authenticate(
-        resData.user.id,
-        resData.user.fullname,
-        resData.token,
-        parseInt(resData.expiresIn) * 1000
-      )
-    );
-    //Saving Data to the storage
-    saveDataToStorage(resData.token, resData.user.id, resData.user.fullname);
+    }*/
   };
 };
 
@@ -62,7 +49,7 @@ export const signup = (fullname, email, password1, password2) => {
 export const login = (email, password) => {
   return async (dispatch) => {
     //Signing in the user
-    const response = await fetch(Env.url + "/login/", {
+    const response = await fetch(config.API_URL + "/login/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -71,11 +58,10 @@ export const login = (email, password) => {
       body: JSON.stringify({
         email: email,
         password: password,
-        returnSecureToken: true,
       }),
     });
     //Handling errors
-    if (!response.ok) {
+    /*if (!response.ok) {
       const errorResData = await response.json();
       const errorId = errorResData;
       let message = "Something went wrong!";
@@ -85,16 +71,22 @@ export const login = (email, password) => {
         message = "This password is not valid";
       }
       throw new Error(message);
-    }
+    }*/
     const resData = await response.json();
-    dispatch(
-      authenticate(resData.user.id, resData.token, resData.user.fullname)
-    );
+    dispatch(authenticate(resData.user.fullname, resData.user.id));
     //Saving Data to the storage
-    saveDataToStorage(resData.token, resData.user.id, resData.user.fullname);
+    saveDataToStorage(resData.token);
   };
 };
 
+export const autologin = (token) => {
+  return async (dispatch) => {
+    //Signing in the user
+    const response = await fetch(config.API_URL + "/users/" + token);
+    const resData = await response.json();
+    dispatch(authenticate(resData.fullname, resData.id));
+  };
+};
 //Declaring the logout action
 export const logout = () => {
   //Removing userdata from the storage
@@ -103,13 +95,11 @@ export const logout = () => {
 };
 
 //Declaring the function for saving data to the storage
-const saveDataToStorage = (token, userId, fullname) => {
+const saveDataToStorage = (token) => {
   AsyncStorage.setItem(
     "userData",
     JSON.stringify({
       token: token,
-      userId: userId,
-      fullname: fullname,
     })
   );
 };

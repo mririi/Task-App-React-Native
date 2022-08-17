@@ -1,12 +1,13 @@
+import React from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Button,
   Dimensions,
   Image,
   Keyboard,
   KeyboardAvoidingView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   View,
 } from "react-native";
@@ -18,70 +19,33 @@ import * as authActions from "../store/actions/auth";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import CustomTitle from "../components/CustomTitle";
 import CustomLink from "../components/CustomLink";
-
+import { Formik, Field } from "formik";
+import * as yup from "yup";
 //Declaring height and width of the device
 const { height, width } = Dimensions.get("screen");
 
-//Declaring the action type
-const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
-
-//Declaring the form reducer
-const formReducer = (state, action) => {
-  if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = {
-      ...state.inputValues,
-      [action.input]: action.value,
-    };
-    const updatedValidities = {
-      ...state.inputValidities,
-      [action.input]: action.isValid,
-    };
-    let updatedFormIsValid = true;
-    for (const key in updatedValidities) {
-      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
-    }
-    return {
-      formIsValid: updatedFormIsValid,
-      inputValidities: updatedValidities,
-      inputValues: updatedValues,
-    };
-  }
-  return state;
-};
-
+const signInValidationSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Please enter valid email")
+    .required("Email is required"),
+  password: yup.string().required("Password is required"),
+});
 const Authentification = (props) => {
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const dispatch = useDispatch();
 
-  //Initializing the form state
-  const [formState, dispatchFormState] = useReducer(formReducer, {
-    inputValues: {
-      email: "",
-      password: "",
-    },
-    inputValidities: {
-      email: false,
-      password: false,
-    },
-    formIsValid: false,
-  });
-
   //Handling the login button
-  const LoginHandler = async () => {
+  const LoginHandler = async (values) => {
     Keyboard.dismiss();
     //Declaring the action
-    action = authActions.login(
-      formState.inputValues.email,
-      formState.inputValues.password
-    );
+    action = authActions.login(values.email, values.password);
     setError(null);
     setIsLoading(true);
     try {
       //Dispatching the login action
       await dispatch(action);
-      setSubmitted(true);
       //Navigation to the Tasks Screen
       props.navigation.navigate("Tasks");
     } catch (err) {
@@ -89,19 +53,6 @@ const Authentification = (props) => {
       setIsLoading(false);
     }
   };
-
-  //Handling the input Data
-  const inputChangeHandler = useCallback(
-    (inputIdentifier, inputValue, inputValidity) => {
-      dispatchFormState({
-        type: FORM_INPUT_UPDATE,
-        value: inputValue,
-        isValid: inputValidity,
-        input: inputIdentifier,
-      });
-    },
-    [dispatchFormState]
-  );
 
   //Creating an error Alert
   useEffect(() => {
@@ -123,37 +74,42 @@ const Authentification = (props) => {
           <Image source={require("../assets/undraw_my_notifications.png")} />
         </View>
         <View style={styles.formContainer}>
-          <CustomTextInput
-            style={styles.email}
-            id="email"
-            keyboardType="email-address"
-            required
-            email
-            onInputChange={inputChangeHandler}
-            submitted={submitted}
-            errorText="Email is required"
-            autoCapitalize="none"
-            placeholder="Enter your email"
-          />
-          <CustomTextInput
-            id="password"
-            secureTextEntry
-            required
-            autoCapitalize="none"
-            submitted={submitted}
-            placeholder="Enter your password"
-            onInputChange={inputChangeHandler}
-            errorText="Password is required"
-          />
-          {isLoading ? (
-            <ActivityIndicator size="small" color={colors.primary} />
-          ) : (
-            <CustomButton
-              style={styles.button}
-              title="Sign In"
-              onPress={LoginHandler}
-            />
-          )}
+          <Formik
+            validationSchema={signInValidationSchema}
+            initialValues={{
+              email: "",
+              password: "",
+            }}
+            onSubmit={(values) => LoginHandler(values)}
+          >
+            {({ handleSubmit, isValid }) => (
+              <>
+                <Field
+                  component={CustomTextInput}
+                  name="email"
+                  placeholder="Email Address"
+                  keyboardType="email-address"
+                />
+                <Field
+                  component={CustomTextInput}
+                  name="password"
+                  placeholder="Password"
+                  secureTextEntry
+                />
+                {isLoading ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <CustomButton
+                    style={styles.button}
+                    title="Sign In"
+                    onPress={handleSubmit}
+                    disabled={!isValid}
+                  />
+                )}
+              </>
+            )}
+          </Formik>
+
           <CustomLink
             style={styles.signIn}
             text="Don't have an account ? "
