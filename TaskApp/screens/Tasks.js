@@ -89,7 +89,6 @@ const Tasks = (props) => {
   //Handling the submit button
   const submitHandler = useCallback(
     async (values) => {
-      Keyboard.dismiss();
       const action = taskActions.createTask(values.title);
       setError(null);
       setIsLoading(true);
@@ -122,8 +121,9 @@ const Tasks = (props) => {
           initialValues={{
             title: "",
           }}
-          onSubmit={(values) => {
+          onSubmit={(values, { resetForm }) => {
             submitHandler(values);
+            resetForm({ values: "" });
           }}
         >
           {({ handleSubmit, isValid }) => (
@@ -160,6 +160,7 @@ const Tasks = (props) => {
               key={itemData.item.id}
               title={itemData.item.title}
               onValueChange={() => {
+                console.log(itemData.item.id)
                 setIdToDelete(itemData.item.id);
                 setModalVisible(true);
               }}
@@ -191,7 +192,7 @@ const Tasks = (props) => {
                   <Pressable
                     style={styles.buttonYes}
                     onPress={async () => {
-                      await dispatch(taskActions.deleteTask(idToDelete));
+                      dispatch(taskActions.deleteTask(idToDelete));
                       loadTasks();
                       setModalVisible(!modalVisible);
                     }}

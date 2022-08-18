@@ -29,10 +29,7 @@ class TaskController extends Controller
     public function store(tasksvalidation $request)
     {
         $request->validated();
-        Task::create($request->all());
-        return response([
-            'message' => 'Task added'
-        ], 201); 
+        return Task::create($request->all());
     }
 
     /**

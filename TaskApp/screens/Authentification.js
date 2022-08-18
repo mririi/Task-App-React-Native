@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -11,6 +11,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { KeyboardAvoidingScrollView } from "react-native-keyboard-avoiding-scroll-view";
 import CustomButton from "../components/CustomButton";
 import CustomTextInput from "../components/CustomTextInput";
 import colors from "../constants/colors";
@@ -62,63 +63,60 @@ const Authentification = (props) => {
   }, [error]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={30}
-      style={styles.container}
-    >
-      <ScrollView>
-        <Image source={require("../assets/shape.png")} />
-        <CustomTitle style={styles.title} title="Welcome Back!" />
-        <View style={styles.image}>
-          <Image source={require("../assets/undraw_my_notifications.png")} />
-        </View>
-        <View style={styles.formContainer}>
-          <Formik
-            validationSchema={signInValidationSchema}
-            initialValues={{
-              email: "",
-              password: "",
-            }}
-            onSubmit={(values) => LoginHandler(values)}
-          >
-            {({ handleSubmit, isValid }) => (
-              <>
-                <Field
-                  component={CustomTextInput}
-                  name="email"
-                  placeholder="Email Address"
-                  keyboardType="email-address"
+    <KeyboardAvoidingScrollView style={styles.container}>
+      <Image source={require("../assets/shape.png")} />
+      <CustomTitle style={styles.title} title="Welcome Back!" />
+      <View style={styles.image}>
+        <Image source={require("../assets/undraw_my_notifications.png")} />
+      </View>
+      <View style={styles.formContainer}>
+        <Formik
+          validationSchema={signInValidationSchema}
+          initialValues={{
+            email: "",
+            password: "",
+          }}
+          onSubmit={(values, { resetForm }) => {
+            LoginHandler(values);
+            resetForm({ values: "" });
+          }}
+        >
+          {({ handleSubmit, isValid }) => (
+            <>
+              <Field
+                component={CustomTextInput}
+                name="email"
+                placeholder="Email Address"
+                keyboardType="email-address"
+              />
+              <Field
+                component={CustomTextInput}
+                name="password"
+                placeholder="Password"
+                secureTextEntry
+              />
+              {isLoading ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <CustomButton
+                  style={styles.button}
+                  title="Sign In"
+                  onPress={handleSubmit}
+                  disabled={!isValid}
                 />
-                <Field
-                  component={CustomTextInput}
-                  name="password"
-                  placeholder="Password"
-                  secureTextEntry
-                />
-                {isLoading ? (
-                  <ActivityIndicator size="small" color={colors.primary} />
-                ) : (
-                  <CustomButton
-                    style={styles.button}
-                    title="Sign In"
-                    onPress={handleSubmit}
-                    disabled={!isValid}
-                  />
-                )}
-              </>
-            )}
-          </Formik>
+              )}
+            </>
+          )}
+        </Formik>
 
-          <CustomLink
-            style={styles.signIn}
-            text="Don't have an account ? "
-            link="Sign Up"
-            onPress={() => props.navigation.navigate("Inscription")}
-          />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        <CustomLink
+          style={styles.signIn}
+          text="Don't have an account ? "
+          link="Sign Up"
+          onPress={() => props.navigation.navigate("Inscription")}
+        />
+      </View>
+    </KeyboardAvoidingScrollView>
   );
 };
 

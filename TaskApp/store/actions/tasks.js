@@ -62,6 +62,7 @@ export const createTask = (title) => {
       )
       .then((response) => {
         const resData = response.data;
+        console.log(resData)
         dispatch({
           type: CREATE_TASK,
           taskData: {

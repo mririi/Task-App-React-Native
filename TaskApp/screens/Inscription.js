@@ -1,17 +1,17 @@
-import React from 'react';
+import React from "react";
 import {
   ActivityIndicator,
   Alert,
   Dimensions,
   Image,
   Keyboard,
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   TextInput,
   View,
 } from "react-native";
+import { KeyboardAvoidingScrollView } from "react-native-keyboard-avoiding-scroll-view";
 import { useState, useEffect, useReducer, useCallback } from "react";
 import CustomButton from "../components/CustomButton";
 import CustomTextInput from "../components/CustomTextInput";
@@ -35,9 +35,7 @@ const signUpValidationSchema = yup.object().shape({
     .string()
     .email("Please enter valid email")
     .required("Email is required"),
-  password: yup
-    .string()
-    .required("Password is required"),
+  password: yup.string().required("Password is required"),
   confirmPassword: yup
     .string()
     .oneOf([yup.ref("password")], "Passwords do not match")
@@ -51,7 +49,6 @@ const Inscription = (props) => {
 
   //Handling the SignUp button
   const SignUpHandler = async (values) => {
-    Keyboard.dismiss();
     //Declaring the action
     action = authActions.signup(
       values.fullName,
@@ -80,76 +77,73 @@ const Inscription = (props) => {
   }, [error]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={30}
-      style={styles.screen}
-    >
-      <ScrollView>
-        <Image source={require("../assets/shape.png")} />
-        <CustomTitle style={styles.title} title="Welcome Onboard!" />
-        <CustomText
-          style={styles.text}
-          text="Let’s help you meet up your tasks"
-        />
-        <View style={styles.formContainer}>
+    <KeyboardAvoidingScrollView style={styles.screen}>
+      <Image source={require("../assets/shape.png")} />
+      <CustomTitle style={styles.title} title="Welcome Onboard!" />
+      <CustomText
+        style={styles.text}
+        text="Let’s help you meet up your tasks"
+      />
+      <View style={styles.formContainer}>
         <Formik
-            validationSchema={signUpValidationSchema}
-            initialValues={{
-              fullName: '',
-              email: '',
-              password: '',
-              confirmPassword: '',
-            }}
-            onSubmit={(values) => SignUpHandler(values)}
-          >
-            {({ handleSubmit, isValid }) => (
-              <>
-               <Field
-                  component={CustomTextInput}
-                  name="fullName"
-                  placeholder="Full Name"
+          validationSchema={signUpValidationSchema}
+          initialValues={{
+            fullName: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+          }}
+          onSubmit={(values, { resetForm }) => {
+            SignUpHandler(values);
+            resetForm({ values: "" });
+          }}
+        >
+          {({ handleSubmit, isValid }) => (
+            <>
+              <Field
+                component={CustomTextInput}
+                name="fullName"
+                placeholder="Full Name"
+              />
+              <Field
+                component={CustomTextInput}
+                name="email"
+                placeholder="Email Address"
+                keyboardType="email-address"
+              />
+              <Field
+                component={CustomTextInput}
+                name="password"
+                placeholder="Password"
+                secureTextEntry
+              />
+              <Field
+                component={CustomTextInput}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                secureTextEntry
+              />
+              {isLoading ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <CustomButton
+                  style={styles.button}
+                  title="Register"
+                  onPress={handleSubmit}
+                  disabled={!isValid}
                 />
-                <Field
-                  component={CustomTextInput}
-                  name="email"
-                  placeholder="Email Address"
-                  keyboardType="email-address"
-                />
-                <Field
-                  component={CustomTextInput}
-                  name="password"
-                  placeholder="Password"
-                  secureTextEntry
-                />
-                <Field
-                  component={CustomTextInput}
-                  name="confirmPassword"
-                  placeholder="Confirm Password"
-                  secureTextEntry
-                />
-                {isLoading ? (
-                  <ActivityIndicator size="small" color={colors.primary} />
-                ) : (
-                  <CustomButton
-                    style={styles.button}
-                    title="Register"
-                    onPress={handleSubmit}
-                    disabled={!isValid}
-                  />
-                )}
-              </>
-            )}
-          </Formik>
-          <CustomLink
-            style={styles.signIn}
-            text="Already have an account ? "
-            link="Sign In"
-            onPress={() => props.navigation.navigate("Authentification")}
-          />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+              )}
+            </>
+          )}
+        </Formik>
+        <CustomLink
+          style={styles.signIn}
+          text="Already have an account ? "
+          link="Sign In"
+          onPress={() => props.navigation.navigate("Authentification")}
+        />
+      </View>
+    </KeyboardAvoidingScrollView>
   );
 };
 
