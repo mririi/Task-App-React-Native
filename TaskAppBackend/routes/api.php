@@ -21,16 +21,13 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/tasks', [TaskController::class, 'index']);
 Route::get('/users/{token}', [AuthController::class, 'getUserByToken']);
-Route::get('/tasks/{id}', [TaskController::class, 'show']);
-Route::get('/tasks/search/{name}', [TaskController::class, 'search']);
 
 
 // Protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/tasks', [TaskController::class, 'index']);
     Route::post('/tasks', [TaskController::class, 'store']);
-    Route::put('/tasks/{id}', [TaskController::class, 'update']);
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });

@@ -28,7 +28,7 @@ const Bienvenue = (props) => {
         return;
       }
       const { token } = JSON.parse(userData);
-      dispatch(authActions.autologin(token.slice(3)));
+      dispatch(authActions.autologin(token));
       props.navigation.navigate("Tasks");
     };
     tryLogin();

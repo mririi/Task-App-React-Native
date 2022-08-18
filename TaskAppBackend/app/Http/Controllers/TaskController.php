@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Http\Requests\tasksvalidation;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -14,7 +16,8 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return Task::orderBy('id', 'ASC')->get();
+        $user=Auth::user()->id;
+        return Task::where('userid', $user)->get();
     }
 
     /**
@@ -23,25 +26,13 @@ class TaskController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(tasksvalidation $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'userid' => 'required',
-        ]);
-
-        return Task::create($request->all());
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        return Task::find($id);
+        $request->validated();
+        Task::create($request->all());
+        return response([
+            'message' => 'Task added'
+        ], 201); 
     }
 
     /**
@@ -52,6 +43,13 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        return Task::destroy($id);
+        $task=Task::find($id);
+        $user=Auth::user()->id;
+        if ($user == $task->userid){
+            Task::destroy($id);
+            return "The Task is deleted";
+        }else{
+            return "This task is not the proprety of the connected user!";
+        }
     }
 }

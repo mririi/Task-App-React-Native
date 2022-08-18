@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "../../config";
+import axios from "axios";
 //Declaring action types
 export const AUTHENTICATE = "AUTHENTICATE";
 export const LOGOUT = "LOGOUT";
@@ -19,29 +20,23 @@ export const authenticate = (fullname, userId) => {
 export const signup = (fullname, email, password1, password2) => {
   return async (dispatch) => {
     //Adding a user to the database
-    const response = await fetch(config.API_URL + "/register/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
+    await axios
+      .post(config.API_URL + "/register/", {
         fullname: fullname,
         email: email,
         password: password1,
         password_confirmation: password2,
-      }),
-    });
-    //Handling errors
-    /*if (!response.ok) {
-      const errorResData = await response.json();
-      const errorId = errorResData;
-      let message = "Something went wrongg!";
-      if (errorId === "EMAIL_EXISTS") {
-        message = "This email exists already!";
-      }
-      throw new Error(message);
-    }*/
+      })
+      .catch((error) => {
+        console.log(error);
+        let message = "Something went wrong, check your connection!";
+        if (error.response.data.errors.email) {
+          message = error.response.data.errors.email;
+        } else {
+          message = error.response.data.message;
+        }
+        throw new Error(message);
+      });
   };
 };
 
@@ -49,42 +44,34 @@ export const signup = (fullname, email, password1, password2) => {
 export const login = (email, password) => {
   return async (dispatch) => {
     //Signing in the user
-    const response = await fetch(config.API_URL + "/login/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
+    await axios
+      .post(config.API_URL + "/login/", {
         email: email,
         password: password,
-      }),
-    });
-    //Handling errors
-    /*if (!response.ok) {
-      const errorResData = await response.json();
-      const errorId = errorResData;
-      let message = "Something went wrong!";
-      if (errorId === "EMAIL_NOT_FOUND") {
-        message = "This email could not be found!";
-      } else if (errorId === "INVALID_PASSWORD") {
-        message = "This password is not valid";
-      }
-      throw new Error(message);
-    }*/
-    const resData = await response.json();
-    dispatch(authenticate(resData.user.fullname, resData.user.id));
-    //Saving Data to the storage
-    saveDataToStorage(resData.token);
+      })
+      .then((response) => {
+        const resData = response.data;
+        dispatch(authenticate(resData.user.fullname, resData.user.id));
+        //Saving Data to the storage
+        saveDataToStorage(resData.token);
+      })
+      .catch((error) => {
+        console.log(error)
+        let message = "Something went wrong, check your connection!";
+        if (error.response.data.message) {
+          message = error.response.data.message;
+        } 
+        throw new Error(message);
+      });
   };
 };
 
 export const autologin = (token) => {
   return async (dispatch) => {
-    //Signing in the user
-    const response = await fetch(config.API_URL + "/users/" + token);
-    const resData = await response.json();
-    dispatch(authenticate(resData.fullname, resData.id));
+    axios.get(config.API_URL + "/users/" + token).then((response)=>{
+      const resData = response.data;
+      dispatch(authenticate(resData.fullname, resData.id));
+    });
   };
 };
 //Declaring the logout action

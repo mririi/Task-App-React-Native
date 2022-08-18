@@ -7,15 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\Http\Requests\loginvalidation;
+use App\Http\Requests\registervalidation;
 
 class AuthController extends Controller
 {
-    public function register(Request $request) {
-        $fields = $request->validate([
-            'fullname' => 'required|string',
-            'email' => 'required|string|unique:users,email',
-            'password' => 'required|string|confirmed'
-        ]);
+    public function register(registervalidation $request) {
+        $fields = $request->validated();
 
         $user = User::create([
             'fullname' => $fields['fullname'],
@@ -33,11 +31,8 @@ class AuthController extends Controller
         return response($response, 201);
     }
 
-    public function login(Request $request) {
-        $fields = $request->validate([
-            'email' => 'required|string',
-            'password' => 'required|string'
-        ]);
+    public function login(loginvalidation $request) {
+        $fields = $request->validated();
 
         // Check email
         $user = User::where('email', $fields['email'])->first();
@@ -45,10 +40,10 @@ class AuthController extends Controller
         // Check password
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             return response([
-                'message' => 'Bad creds'
+                'message' => 'Wrong credentials, Check you email and password!'
             ], 401);
         }
-
+        
         $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response = [

@@ -12,7 +12,6 @@ const CustomTextInput = (props) => {
     ...inputProps
   } = props;
 
-  const hasError = errors[name] && touched[name];
 
   return (
     <View style={styles.container}>
@@ -26,7 +25,7 @@ const CustomTextInput = (props) => {
           onBlur(name);
         }}
       />
-      {hasError && <Text style={styles.errorText}>{errors[name]}</Text>}
+      {errors[name] && touched[name] && <Text style={styles.errorText}>{errors[name]}</Text>}
     </View>
   );
 };

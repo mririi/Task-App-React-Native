@@ -50,7 +50,7 @@ const Tasks = (props) => {
   const [idToDelete, setIdToDelete] = useState();
   const userData = AsyncStorage.getItem("userData");
   if (!userData) {
-    props.navigation.navigate("Bienvenue")
+    props.navigation.navigate("Bienvenue");
     return;
   }
   //Getting the userId from the state
@@ -74,8 +74,6 @@ const Tasks = (props) => {
     try {
       setError(null);
       setIsRefreshing(true);
-
-      //Dispatching fetchTasks action
       dispatch(taskActions.fetchTasks());
     } catch (err) {
       setError(err.message);
@@ -83,7 +81,6 @@ const Tasks = (props) => {
     setIsRefreshing(false);
   }, [dispatch, setIsRefreshing, setError]);
 
-  //Handling the loading state
   useEffect(() => {
     setIsLoading(true);
     loadTasks().then(() => setIsLoading(false));
@@ -125,7 +122,9 @@ const Tasks = (props) => {
           initialValues={{
             title: "",
           }}
-          onSubmit={(values) => submitHandler(values)}
+          onSubmit={(values) => {
+            submitHandler(values);
+          }}
         >
           {({ handleSubmit, isValid }) => (
             <>
