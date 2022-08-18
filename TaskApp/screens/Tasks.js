@@ -59,7 +59,7 @@ const Tasks = (props) => {
   const fullname = useSelector((state) => state.auth.fullname);
   //Getting all the tasks in the state
   const tasks = useSelector((state) =>
-    state.tasks.availableTasks.filter((task) => task.userid === userid)
+    state.tasks.availableTasks
   );
   const dispatch = useDispatch();
 
