@@ -1,9 +1,4 @@
-import Task from "../../models/Task";
-import {
-  DELETE_TASK,
-  CREATE_TASK,
-  SET_TASKS,
-} from "../actions/tasks";
+import { DELETE_TASK, CREATE_TASK, SET_TASKS } from "../actions/tasks";
 
 //Initialising state
 const initialState = {
@@ -18,21 +13,22 @@ export default (state = initialState, action) => {
         availableTasks: action.tasks,
       };
     case CREATE_TASK:
-      const newTask = new Task(
-        action.taskData.id,
-        action.taskData.title,
-        action.taskData.userid
-      );
+      const newTask = {
+        id: action.taskData.id,
+        title: action.taskData.title,
+        userid: action.taskData.userid,
+      };
+
       return {
         ...state,
         availableTasks: state.availableTasks.concat(newTask),
       };
-      case DELETE_TASK:
+    case DELETE_TASK:
       return {
         ...state,
         availableProducts: state.availableTasks.filter(
-          task => task.id !== action.tid
-        )
+          (task) => task.id !== action.tid
+        ),
       };
   }
   return state;

@@ -1,12 +1,6 @@
 import React from "react";
-import { useCallback, useEffect, useReducer, useState } from "react";
-import {
-  Dimensions,
-  Keyboard,
-  Modal,
-  Pressable,
-  StatusBar,
-} from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Dimensions, Modal, Pressable, StatusBar } from "react-native";
 import {
   ActivityIndicator,
   Alert,
@@ -39,7 +33,7 @@ const windowHeight = Dimensions.get("window").height;
 const navbarHeight = height - windowHeight + StatusBar.currentHeight;
 
 const InputValidationSchema = yup.object().shape({
-  title: yup.string().required("Title is required"),
+  title: yup.string().required("Task is required"),
 });
 
 const Tasks = (props) => {
@@ -53,14 +47,10 @@ const Tasks = (props) => {
     props.navigation.navigate("Bienvenue");
     return;
   }
-  //Getting the userId from the state
-  const userid = useSelector((state) => state.auth.userId);
   //Getting the fullname from the state
   const fullname = useSelector((state) => state.auth.fullname);
   //Getting all the tasks in the state
-  const tasks = useSelector((state) =>
-    state.tasks.availableTasks
-  );
+  const tasks = useSelector((state) => state.tasks.availableTasks);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -88,12 +78,13 @@ const Tasks = (props) => {
 
   //Handling the submit button
   const submitHandler = useCallback(
-    async (values) => {
-      const action = taskActions.createTask(values.title);
+    async (values, { resetForm }) => {
+      action = taskActions.createTask(values.title);
       setError(null);
       setIsLoading(true);
       try {
         await dispatch(action);
+        resetForm({ values: "" });
         setIsLoading(false);
       } catch (err) {
         setError(err.message);
@@ -122,8 +113,7 @@ const Tasks = (props) => {
             title: "",
           }}
           onSubmit={(values, { resetForm }) => {
-            submitHandler(values);
-            resetForm({ values: "" });
+            submitHandler(values, { resetForm });
           }}
         >
           {({ handleSubmit, isValid }) => (
@@ -160,7 +150,6 @@ const Tasks = (props) => {
               key={itemData.item.id}
               title={itemData.item.title}
               onValueChange={() => {
-                console.log(itemData.item.id)
                 setIdToDelete(itemData.item.id);
                 setModalVisible(true);
               }}
@@ -229,7 +218,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.button,
     height: height * 0.37,
   },
-
   profile: {
     width: width * 0.254,
     height: height * 0.12,
@@ -284,7 +272,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   flatlist: {
     marginRight: width * 0.086,
     marginBottom: height * 0.024,

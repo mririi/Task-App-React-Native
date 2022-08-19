@@ -1,7 +1,6 @@
-import config from "../../config";
-import Task from "../../models/Task";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import config from "../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //Exporting action types
 export const SET_TASKS = "SET_TASKS";
@@ -12,8 +11,7 @@ export const DELETE_TASK = "DELETE_TASK";
 export const fetchTasks = () => {
   return async (dispatch) => {
     const userData = await AsyncStorage.getItem("userData");
-    const transformedData = JSON.parse(userData);
-    const { token } = transformedData;
+    const { token } = JSON.parse(userData);
     //Fetching the tasks from the backend
     axios
       .get(config.API_URL + "/tasks", {
@@ -25,9 +23,11 @@ export const fetchTasks = () => {
         const resData = response.data;
         const loadedTasks = [];
         for (const key in resData) {
-          loadedTasks.push(
-            new Task(resData[key].id, resData[key].title, resData[key].userid)
-          );
+          loadedTasks.push({
+            id: resData[key].id,
+            title: resData[key].title,
+            userid: resData[key].userid,
+          });
         }
         //Dispatching SET_TASKS action
         dispatch({
@@ -35,24 +35,27 @@ export const fetchTasks = () => {
           tasks: loadedTasks,
         });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        let message = "Something went wrong!";
+        if (error.response.data.message) {
+          message = error.response.data.message;
+        }
+        throw new Error(message);
+      });
   };
 };
 
 //Declaring createTask action
 export const createTask = (title) => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     const userData = await AsyncStorage.getItem("userData");
-    const transformedData = JSON.parse(userData);
-    const { token } = transformedData;
-    const userId = getState().auth.userId;
+    const { token } = JSON.parse(userData);
     //Creating task
     axios
       .post(
         `${config.API_URL}/tasks`,
         {
           title: title,
-          userid: userId,
         },
         {
           headers: {
@@ -67,9 +70,16 @@ export const createTask = (title) => {
           taskData: {
             id: resData.id,
             title: title,
-            userid: userId,
+            userid: resData.userId,
           },
         });
+      })
+      .catch((error) => {
+        let message = "Something went wrong!";
+        if (error.response.data.message) {
+          message = error.response.data.message;
+        }
+        throw new Error(message);
       });
   };
 };
@@ -77,10 +87,8 @@ export const createTask = (title) => {
 //Declaring deleteTask action
 export const deleteTask = (taskId) => {
   return async (dispatch) => {
-    //Getting token from the state
     const userData = await AsyncStorage.getItem("userData");
-    const transformedData = JSON.parse(userData);
-    const { token } = transformedData;
+    const { token } = JSON.parse(userData);
     //Deleting task
     axios
       .delete(`${config.API_URL}/tasks/${taskId}`, {
@@ -88,7 +96,13 @@ export const deleteTask = (taskId) => {
           Authorization: "Bearer " + token,
         },
       })
-      .catch((error) => console.log(error.message));
+      .catch((error) => {
+        let message = "Something went wrong!";
+        if (error.response.data.message) {
+          message = error.response.data.message;
+        }
+        throw new Error(message);
+      });
     //Dispatching DELETE_TASK action
     dispatch({
       type: DELETE_TASK,

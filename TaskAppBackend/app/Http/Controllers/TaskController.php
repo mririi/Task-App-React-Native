@@ -28,8 +28,8 @@ class TaskController extends Controller
      */
     public function store(tasksvalidation $request)
     {
-        $request->validated();
-        return Task::create($request->all());
+        $task=$request->validated();
+        return Task::create(['title'=>$task['title'],'userid'=>Auth::user()->id]);
     }
 
     /**

@@ -2,13 +2,13 @@ import React from "react";
 import {
   ActivityIndicator,
   Alert,
-  Button,
   Dimensions,
   Image,
   Keyboard,
-  KeyboardAvoidingView,
-  ScrollView,
+  Modal,
+  Pressable,
   StyleSheet,
+  Text,
   View,
 } from "react-native";
 import { KeyboardAvoidingScrollView } from "react-native-keyboard-avoiding-scroll-view";
@@ -17,7 +17,7 @@ import CustomTextInput from "../components/CustomTextInput";
 import colors from "../constants/colors";
 import { useDispatch } from "react-redux";
 import * as authActions from "../store/actions/auth";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import CustomTitle from "../components/CustomTitle";
 import CustomLink from "../components/CustomLink";
 import { Formik, Field } from "formik";
@@ -35,10 +35,12 @@ const signInValidationSchema = yup.object().shape({
 const Authentification = (props) => {
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
   const dispatch = useDispatch();
 
   //Handling the login button
-  const LoginHandler = async (values) => {
+  const LoginHandler = async (values, { resetForm }) => {
     Keyboard.dismiss();
     //Declaring the action
     action = authActions.login(values.email, values.password);
@@ -47,6 +49,8 @@ const Authentification = (props) => {
     try {
       //Dispatching the login action
       await dispatch(action);
+      resetForm({ values: "" });
+      setIsLoading(false);
       //Navigation to the Tasks Screen
       props.navigation.navigate("Tasks");
     } catch (err) {
@@ -58,7 +62,7 @@ const Authentification = (props) => {
   //Creating an error Alert
   useEffect(() => {
     if (error) {
-      Alert.alert("An error occurred!", error, [{ text: "Ok" }]);
+      setModalVisible(true);
     }
   }, [error]);
 
@@ -77,8 +81,7 @@ const Authentification = (props) => {
             password: "",
           }}
           onSubmit={(values, { resetForm }) => {
-            LoginHandler(values);
-            resetForm({ values: "" });
+            LoginHandler(values, { resetForm });
           }}
         >
           {({ handleSubmit, isValid }) => (
@@ -116,6 +119,33 @@ const Authentification = (props) => {
           onPress={() => props.navigation.navigate("Inscription")}
         />
       </View>
+      <View style={styles.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>{error}</Text>
+              <View style={styles.buttonContainer}>
+                <Pressable
+                  style={styles.buttonOK}
+                  onPress={async () => {
+                    setModalVisible(!modalVisible);
+                  }}
+                >
+                  <Text style={styles.textStyle}>OK</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
     </KeyboardAvoidingScrollView>
   );
 };
@@ -148,6 +178,61 @@ const styles = StyleSheet.create({
   },
   signIn: {
     marginTop: height * 0.0349,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: height * 0.026,
+  },
+  modalView: {
+    marginVertical: height * 0.015,
+    marginHorizontal: width * 0.051,
+    backgroundColor: "#BAEEF3",
+    borderRadius: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    height: height * 0.15,
+    width: width * 0.8,
+    shadowOffset: {
+      width: 0,
+      height: height * 0.005,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonContainer: {
+    justifyContent: "space-around",
+    flexDirection: "row",
+    top: height * 0.012,
+  },
+  buttonOK: {
+    borderRadius: 10,
+    backgroundColor: "#35A7B2",
+    height: height * 0.0422,
+    width: width * 0.35,
+    elevation: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: width * 0.0254,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  textStyle: {
+    color: "#ffffff",
+    textAlign: "center",
+    fontFamily: "poppins-bold",
+    fontSize: height * 0.018,
+  },
+  modalText: {
+    marginBottom: height * 0.018,
+    fontFamily: "poppins-regular",
+    fontWeight: "400",
+    textAlign: "center",
+    top: width * 0.018,
+    fontSize: height * 0.0217,
   },
 });
 export default Authentification;

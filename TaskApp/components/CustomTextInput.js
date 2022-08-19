@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React from "react";
 import { Dimensions, StyleSheet, Text, TextInput, View } from "react-native";
 
 //Declaring height and width of the device

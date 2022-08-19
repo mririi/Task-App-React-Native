@@ -25,7 +25,6 @@ class tasksvalidation extends FormRequest
     {
         return [
             'title' => 'required',
-            'userid' => 'required',
         ];
     }
 }

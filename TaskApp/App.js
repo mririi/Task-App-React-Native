@@ -8,7 +8,6 @@ import { useCallback, useEffect, useState } from "react";
 import Authentification from "./screens/Authentification";
 import Tasks from "./screens/Tasks";
 import { Provider } from "react-redux";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import configureStore from "./store/configureStore";
 

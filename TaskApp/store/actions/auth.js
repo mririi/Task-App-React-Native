@@ -6,12 +6,11 @@ export const AUTHENTICATE = "AUTHENTICATE";
 export const LOGOUT = "LOGOUT";
 
 //Declaring the authenticate action
-export const authenticate = (fullname, userId) => {
+export const authenticate = (fullname) => {
   return (dispatch) => {
     dispatch({
       type: AUTHENTICATE,
       fullname: fullname,
-      userId: userId,
     });
   };
 };
@@ -28,8 +27,7 @@ export const signup = (fullname, email, password1, password2) => {
         password_confirmation: password2,
       })
       .catch((error) => {
-        console.log(error);
-        let message = "Something went wrong, check your connection!";
+        let message = "Something went wrong!";
         if (error.response.data.errors.email) {
           message = error.response.data.errors.email;
         } else {
@@ -51,13 +49,12 @@ export const login = (email, password) => {
       })
       .then((response) => {
         const resData = response.data;
-        dispatch(authenticate(resData.user.fullname, resData.user.id));
+        dispatch(authenticate(resData.user.fullname));
         //Saving Data to the storage
         saveDataToStorage(resData.token);
       })
       .catch((error) => {
-        console.log(error)
-        let message = "Something went wrong, check your connection!";
+        let message = "Something went wrong!";
         if (error.response.data.message) {
           message = error.response.data.message;
         } 
@@ -70,7 +67,7 @@ export const autologin = (token) => {
   return async (dispatch) => {
     axios.get(config.API_URL + "/users/" + token).then((response)=>{
       const resData = response.data;
-      dispatch(authenticate(resData.fullname, resData.id));
+      dispatch(authenticate(resData.fullname));
     });
   };
 };
